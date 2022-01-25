@@ -86,14 +86,12 @@ class block_activityfeedback extends block_base {
             
             $linda = $OUTPUT;
             $bla = $PAGE;
-            $blubb = array(html_writer::tag('img', '', array('alt' => get_string('defaulttext', 'block_activityfeedback'), 
-                    'src' => $CFG->wwwroot . "/blocks/activityfeedback/pix/thumsup.png")));
-
-            //'<img src="' . $CFG->wwwroot . '/blocks/activityfeedback/pix/thumsup.png"';
+            //$blubb = array(html_writer::tag('img', '', array('alt' => get_string('defaulttext', 'block_activityfeedback'), 
+            //        'src' => $CFG->wwwroot . "/blocks/activityfeedback/pix/thumbsup.png")));
             
             //$PAGE->requires->js_call_amd('block_activityfeedback/config', 'init');
-            $first = "linda";
-            $PAGE->requires->js_call_amd('block_activityfeedback/testjs', 'init', array($first));
+            $rootpath = $CFG->wwwroot;
+            $PAGE->requires->js_call_amd('block_activityfeedback/testjs', 'init', array($rootpath));
             echo '<div>hi there!</div>';
             //$allowHTML = get_config('activityfeedback', 'Allow_HTML');
         }

@@ -6,6 +6,8 @@
     top: 20%;
     z-index: 1;
 }
+.activityfeedback_btn { cursor: pointer; }
+
 /*
 https://docs.moodle.org/dev/Blocks
 html_attributes

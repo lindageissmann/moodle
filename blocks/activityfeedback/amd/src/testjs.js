@@ -8,9 +8,9 @@
 //import jQuery from 'jquery';
 //----import * as Str from 'core/str';
 //import Ajax from 'core/ajax';
-export const init = (first) => {
+export const init = (rootpath) => {
     window.console.log('we have been started_blabla_linda');
-    window.console.log(`hello ${first} , warum?`);
+    window.console.log(`hello ${rootpath} , warum?`);
     //window.console.log(Str.get_string('defaulttext','block_activityfeedback'));
     //alert(`guten tag ${first}`); //fkt. ohne import jquery
     const elem = document.getElementById("module-1");
@@ -25,14 +25,26 @@ export const init = (first) => {
         //node.classList.add('MyClass');
         let figureMain = document.createElement("figure");
         let imgMain = document.createElement("img");
-        //imgMain.src = "../pix/thumbsup.png";
-        //imgMain.src = "[[pix:theme|../pix/thumbsup]]";
-        imgMain.src = "pix/thumbsup.png";
+        imgMain.className = "activityfeedback_btn";
+        imgMain.src = rootpath + "/blocks/activityfeedback/pix/thumbsup.png";
         imgMain.alt = "feedback button";
+        const coursemoduleid = (activity.id).substring(7); //xx holen aus id=module-xx
+        imgMain.setAttribute("data-cmid", coursemoduleid);
         let figCaptMain = document.createElement("figcaption");
         figCaptMain.textContent = "Feedback";
         figureMain.append(imgMain, figCaptMain);
         container.append(figureMain);
         activityInstance.appendChild(container);
     }
+    let afbtns = document.getElementsByClassName("activityfeedback_btn");
+    for (let btn of afbtns) {
+        btn.addEventListener('click', function () {
+            const cmid = this.getAttribute("data-cmid");
+            setFeedback(cmid);
+        });
+    }
 };
+function setFeedback(cmid)
+{
+    window.console.log(cmid);
+}

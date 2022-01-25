@@ -40,7 +40,7 @@ class get_pix_data extends external_api {
 
         //Note: don't forget to validate the context and check capabilities
 
-        return $returnedvalue;
+        //return $returnedvalue;
     }
 
     /**
