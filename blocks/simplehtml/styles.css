@@ -1,0 +1,12 @@
+/*todolig, unklar*/
+.block_simplehtml {
+    color: red;
+    text-decoration: underline;
+    border: 1px blue solid;
+}
+
+.simplehtml .displaydate {
+    font-size: 80em;
+    text-align: center;
+    color: turquoise;
+}
