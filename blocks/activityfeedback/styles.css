@@ -1,0 +1,15 @@
+/*update version.php to see changes*/
+.block_activityfeedback_container {
+    color: red;
+    position: absolute;
+    left: 80%;
+    top: 20%;
+    z-index: 1;
+}
+/*
+https://docs.moodle.org/dev/Blocks
+html_attributes
+
+siehe auch block_simplehtml:
+$this->content->text .= html_writer::start_tag('ul');
+ */
