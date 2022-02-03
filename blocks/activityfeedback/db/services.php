@@ -7,17 +7,38 @@
 
 // update version.php to see changes
 
+defined('MOODLE_INTERNAL') || die();
+
 $functions = array(
-        'local_activityfeedback_get_pix_data' => array( // local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.                                                                                
-                'classname'   => 'get_pix_data', // create this class in componentdir/classes/external, class containing the external function OR namespaced class in classes/external/XXXX.php
-                'methodname'  => 'get_pix_data', // external function name, implement this function into the above class
-                //'classpath'   => 'local/myplugin/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
-                'description' => 'get picture data', //human readable description of the web service function, will be displayed in the generated API documentation
-                'type'        => 'read', // database rights of the web service function (read, write), the value is 'write' if your function does any database change, otherwise it is 'read'.
-                'ajax'        => true, // true/false if you allow this web service function to be callable via ajax 
-                'capabilities'  => '',  // List the capabilities required by the function (those in a require_capability() call) (missing capabilities are displayed for authorised users and also for manually created tokens in the web interface, this is just informative).
-                'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile')    // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included. Services created manually via the Moodle interface are not supported.
-        )
+        'block_activityfeedback_get_feedback_data' => array(
+                'classname'   => 'get_feedback_data',
+                'methodname'  => 'execute',
+                'classpath'   => 'blocks/activityfeedback/classes/external/get_feedback_data.php',
+                'description' => 'Get existing feedbacks for course and user for displaying',
+                'type'        => 'read',
+                'ajax'        => true,
+                'capabilities'  => '',
+        ),
+        'block_activityfeedback_set_feedback_data' => array( // web service function name, callable from client
+                'classname'   => 'set_feedback_data', // class containing the external function
+                // (or with path, then you don't need classpath, but namespace and usings in class, see e.g. block 'accessreview') 
+                'methodname'  => 'execute', // external function named, implemented in the above class
+                'classpath'   => 'blocks/activityfeedback/classes/external/set_feedback_data.php', // file containing the class/external function (optional, dependent of namespace of class)
+                'description' => 'Update database table block_activityfeedback if feedback option was selected.', // will be displayed in the generated API documentation
+                'type'        => 'write', // database rights of the web service function (read, write)
+                'ajax'        => true, // if service is available to 'internal' ajax calls
+                //'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE) // optional, list of built-in services where the function will be included
+                'capabilities'  => '',  // list of capabilities required by the function (those in a require_capability() call)
+        ),
+        'block_activityfeedback_get_pix_data' => array(
+                'classname'   => 'get_pix_data',
+                'methodname'  => 'execute',
+                'classpath'   => 'blocks/activityfeedback/classes/external/get_pix_data.php',
+                'description' => 'Get data about selectable feedback options/pictures for displaying',
+                'type'        => 'read',
+                'ajax'        => true,
+                'capabilities'  => '',
+        ),
 );
 
 // OPTIONAL
@@ -25,18 +46,16 @@ $functions = array(
 // A pre-build service is not editable by administrator.
 $services = array(
         'Activity feedback service' => array(      // the name of the web service
-                'functions' => array ('local_activityfeedback_get_pix_data'), // web service functions of this service
-                'requiredcapability' => '',   // if set, the web service user need this capability to access 
-                                              // any function of this service. For example: 'some/capability:specified'
+                'functions' => array(
+                        'block_activityfeedback_get_feedback_data',
+                        'block_activityfeedback_set_feedback_data',
+                        'block_activityfeedback_get_pix_data'
+                ), // web service functions of this service
+                'requiredcapability' => '',   // if set, the web service user need this capability to access any function of this service. For example: 'some/capability:specified'
                 'restrictedusers' => 0, // if 1, the administrator must manually select which user can use this service. (> Web services > Manage services > Authorised users)
-                'enabled'=>1, // if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
-                'shortname'=>'activityfeedback', //the short name used to refer to this service from elsewhere including when fetching a token, optional – but needed if restrictedusers is set so as to allow logins
-                'downloadfiles' => 0,    // allow file downloads.
-                'uploadfiles'  => 0      // allow file uploads.
+                'enabled' => 1, // if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
+                'shortname' => 'activityfeedbackservice', // the short name used to refer to this service from elsewhere including when fetching a token, optional – but needed if restrictedusers is set so as to allow logins
+                'downloadfiles' => 0,    // don't allow file downloads
+                'uploadfiles' => 0      // don't allow file uploads
         )
 );
-
-
-
-
-

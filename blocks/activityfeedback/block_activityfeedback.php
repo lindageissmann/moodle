@@ -16,16 +16,27 @@
  * 
  * $CFG: configuration
  * 
+ * habe ich getestet:
+ * // init, get_content, specialization is not executed if block is manually set to hidden in a course
+ * 
  * auf site home nicht automatisch erscheinen
  * auf dashboard nicht aktivierbar
  * wie "Acitivites" -> activity_modules
 */
+//https://docs.moodle.org/dev/Roles_and_modules#Context
 
+//todolig: am Ende Stil automatisch prüfen:
+//https://docs.moodle.org/dev/Coding_style
+
+require_once($CFG->dirroot . '/blocks/activityfeedback/lib.php');
 
 class block_activityfeedback extends block_base {
     
     public function init() {
         $this->title = get_string('pluginname', 'block_activityfeedback');
+        //$this->title = get_string('opt1nameadmin', 'block_activityfeedback');
+        //$num = 1;
+        //$this->title = get_string('opt'.$num.'nameadmin', 'block_activityfeedback');
     }
     // The PHP tag and the curly bracket for the class definition 
     // will only be closed after there is another function added in the next section.
@@ -53,20 +64,20 @@ class block_activityfeedback extends block_base {
 		//function returns the content object
         return $this->content;
     }
-
+    
     // übernimmt Config (aus edit_form)
     // it's guaranteed to be automatically called by Moodle as soon as our instance configuration is loaded
     // and available (that is, immediately after init() is called)
     // Providing a specialization() method is the natural choice for any configuration data that needs to be
     // acted upon or made available "as soon as possible".
     public function specialization() {
-        global $DB, $COURSE, $PAGE, $OUTPUT, $CFG;
+        global $DB, $COURSE, $PAGE, $OUTPUT, $CFG, $USER;
         if (isset($this->config)) {
-            if (empty($this->config->title)) {
-                $this->title = get_string('defaulttitle', 'block_activityfeedback');
-            } else {
-                $this->title = $this->config->title;
-            }
+            //if (empty($this->config->title)) {
+            //    $this->title = get_string('defaulttitle', 'block_activityfeedback');
+            //} else {
+            //    $this->title = $this->config->title;
+            //}
     
             if (empty($this->config->text)) {
                 $this->config->text = get_string('defaulttext', 'block_activityfeedback');
@@ -77,22 +88,56 @@ class block_activityfeedback extends block_base {
             if (!empty($this->config->optionactive)) {
                 $this->content->text .= $this->config->optionactive;
             }
-            
-            //https://docs.moodle.org/dev/Using_images_in_a_theme
-            //$templatecontext = [
-            //        'imageone' => $OUTPUT->image_url('thumbsup', 'theme'),     
+
+            //$fs = get_file_storage();
+            //
+            //$optarray = array();
+            //$opt1active = get_config('block_activityfeedback', 'opt1activeadmin');
+            //if($opt1active) {
+            //    $file = get_config('block_activityfeedback', 'opt1pictureadmin');
+            //    if ($fs->file_exists(1, 'block_activityfeedback', 'activityfeedback_pix_admin', 0, '/', $file)) {
+            //        //$pixparam[$file]
+            //        $pixurl = block_activityfeedback_pix_url(1, 'activityfeedback_pix_admin', $file);
+            //        //$this->content->text = html_writer::img($pixurl,$alt="alternativ");
             //        
-            //];
+            //        //todolig, unklar
+            //        //You normally use an API function to generate these URL automatically, most often the file_rewrite_pluginfile_urls function. 
+            //        $bla2 = file_rewrite_pluginfile_urls($pixurl, 'pluginfile.php',
+            //                1, 'block_activityfeedback', 'activityfeedback_pix_admin', 0);
+            //        
+            //        $opt1name = get_config('block_activityfeedback', 'opt1nameadmin');
+            //        $optarray[0]['key'] = $opt1name;
+            //        $optarray[0]['value'] = $pixurl;
+            //    }
+            //}
             
-            $linda = $OUTPUT;
-            $bla = $PAGE;
-            //$blubb = array(html_writer::tag('img', '', array('alt' => get_string('defaulttext', 'block_activityfeedback'), 
-            //        'src' => $CFG->wwwroot . "/blocks/activityfeedback/pix/thumbsup.png")));
+            //evtl. auch unter /pix speichern, und dann von da holen, falls zwar aktiv, aber kein Bild in Settings
+
+            // todolig: auf $arguments umbenennen, $rootpath auch darin
+            // od. jede Variable einzeln
+            $args = array(
+                    'rootpath' => $CFG->wwwroot,
+                    'userid' => $USER->id,
+                    'contextid' => $this->context->id,
+                    'courseid' => $COURSE->id
+            );
             
-            //$PAGE->requires->js_call_amd('block_activityfeedback/config', 'init');
-            $rootpath = $CFG->wwwroot;
-            $PAGE->requires->js_call_amd('block_activityfeedback/testjs', 'init', array($rootpath));
-            echo '<div>hi there!</div>';
+            // vermutlich in get_content verschieben
+            // Setting up AMD module.
+            //$arguments = [$toggled, $whattoshow, $COURSE->id];
+           
+            //todolig: $optarray unschön wegen Kommentar: https://docs.moodle.org/dev/Javascript_Modules#Embedding_AMD_code_in_a_page
+            // if the size of the params array is too large (> 1Kb), this will produce a developer warning.
+            // Do not attempt to pass large amounts of data through this function, it will pollute the page size.
+            // A preferred approach is to pass css selectors for DOM elements that contain data-attributes for any required data,
+            // or fetch data via ajax in the background.
+            //$rootpath = $CFG->wwwroot;
+            
+            //todolig: nur anzeigen, wenn nicht im configmodus
+            //// Check to see if we are in editing mode
+            //$canmanage = $PAGE->user_is_editing($this->instance->id);
+            
+            $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
             //$allowHTML = get_config('activityfeedback', 'Allow_HTML');
         }
 
@@ -140,17 +185,26 @@ class block_activityfeedback extends block_base {
         //    }
         //}
     }
-    
-    // to be able to add multiple blocks of this type to a single course
-    // administrator still has the option of disallowing such behavior.
-    // This setting can be set separately for each block from the Administration / Configuration / Blocks page
-    public function instance_allow_multiple() {
+
+    /**
+     * Enables global configurability of the block.
+     * This line tells Moodle that the block has a settings.php file.
+     * @return bool
+     */
+    public function has_config(): bool {
         return true;
     }
-    
-    // Since version 2.4, the following line must be added in order to enable global configuration:
-    // This line tells Moodle that the block has a settings.php file.  
-    function has_config() {return true;}
+
+    /**
+     * It shouldn't be possible to add multiple blocks of this type in a singe course.
+     * Controls whether multiple block instances in a single course are allowed.
+     * The administrator still has the option of disallowing such behavior.
+     * This setting can be set separately for each block from the Administration / Configuration / Blocks page.
+     * @return bool
+     */
+    public function instance_allow_multiple(): bool {
+        return false;
+    }
     
     // falls Titel nicht angezeigt werden soll
     // im init() müssen wir unabhängig davon immer! zwingend einen eindeutigen Titel definieren

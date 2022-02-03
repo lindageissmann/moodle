@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/activityfeedback/db" VERSION="20220126" COMMENT="XMLDB file for Moodle blocks/activityfeedback"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="block_activityfeedback" COMMENT="feedback of users on activities for block activityfeedback">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="foreign key to id from table course_modules (for course and activity)"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="foreign key to id of table user"/>
+        <FIELD NAME="fbid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id for chosen feedback option, references config_plugins because feedback options are configurable"/>
+        <FIELD NAME="fbname" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="name of chosen feedback option because configured feedback options (value referenced by fbid) can change over time"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

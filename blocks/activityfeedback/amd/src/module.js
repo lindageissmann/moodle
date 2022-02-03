@@ -1,0 +1,236 @@
+//https://docs.moodle.org/dev/Javascript_Modules
+//only functions which are exported will be callable from outside the module
+//if the size of the params array is too large (> 1Kb), this will produce a developer warning. Do not attempt
+//to pass large amounts of data through this function, it will pollute the page size.
+//A preferred approach is to pass css selectors for DOM elements that contain data-attributes for any required data,
+//or fetch data via ajax in the background.
+//https://moodle.org/mod/forum/discuss.php?d=378112#p1524459
+// zwar veraltet, aber camel case hier ok: https://docs.moodle.org/dev/Javascript/Coding_Style
+// (auch in Bsp benutzt: https://docs.moodle.org/dev/Javascript_Modules)
+//todolig auf camelCase umstellen
+//import $ from 'jquery';
+//import jquery from 'jquery';
+//import * as Str from 'core/str';
+import Ajax from 'core/ajax';
+//import {exception as displayError} from 'core/notification';
+import notification from 'core/notification';
+//define(['jquery', 'core/ajax', 'core/notification']);
+export const init = (args) => {
+    const userid = parseInt(args.userid);
+    const courseid = parseInt(args.courseid);
+    const rootPath = args.rootpath;
+    //const elems = document.querySelectorAll('[id^=module-]');
+    //warum fkt. hier jquery?
+    //jquery: .done(), .success, .fail, .always
+    //.then, .when
+    displayPictures(rootPath, courseid, userid);
+    //getFeedback(courseid, userid); // todolig! gibt hier race condition, dass getFeedback end done noch vor displayPict start done
+};
+
+function displayPictures(rootPath, courseid, userid)
+{
+    window.console.log("displayPictures: start");
+    Ajax.call([
+        {
+            methodname: 'block_activityfeedback_get_pix_data',
+            args: {},
+            done: function (pixData) {
+                window.console.log("displayPictures: start done");
+                const activities = document.getElementsByClassName("activity");
+                for (const activity of activities)
+                {
+                    let activityInstance = activity.getElementsByClassName("activityinstance")[0];
+                    // check if exists, because e.g. activity 'label' has no <div> child element with class 'activityinstance'
+                    if(activityInstance !== undefined && activityInstance !== null) {
+                        const courseModuleId = (activity.id).substring(7); // extract xx from id=module-xx
+                        let container = document.createElement("figure");
+                        container.className = "block_activityfeedback_container";
+                        container.setAttribute("data-cmid", courseModuleId);
+                        //node.classList.add('MyClass');
+                        // main button for feedback
+                        let figureMain = document.createElement("figure");
+                        let imgMain = document.createElement("img");
+                        imgMain.className = "block_activityfeedback_btn_main";
+                        imgMain.src = rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                        //imgMain.alt = Str.get_string('activityfeedback', 'block_activityfeedback'); //todolig
+                        imgMain.setAttribute("data-cmid", courseModuleId);
+                        let figCaptMain = document.createElement("figcaption");
+                        //figCaptMain.textContent = Str.get_string('activityfeedback', 'block_activityfeedback');
+                        //window.console.log(Str.get_string('activityfeedback', 'block_activityfeedback'));
+                        //window.console.log(formal);
+                        figureMain.append(imgMain, figCaptMain);
+                        container.append(figureMain);
+                        // feedback buttons for option 1 to max. 7, max. number of elements is given by length of pixData array
+                        for (let num = 1; num <= 7 && num <= pixData.length; num++) {
+                            let figureOpt = document.createElement("figure");
+                            figureOpt.id = "figureopt" + num;//todolig
+                            let imgOpt = document.createElement("img");
+                            imgOpt.className = "block_activityfeedback_btn";
+                            imgOpt.src = pixData[num - 1].url;
+                            imgOpt.alt = pixData[num - 1].name;
+                            imgOpt.setAttribute("data-cmid", courseModuleId);
+                            imgOpt.setAttribute("data-fbid", pixData[num - 1].key);
+                            imgOpt.setAttribute("data-fbname", pixData[num - 1].name);
+                            let figCaptOpt = document.createElement("figcaption");
+                            figCaptOpt.textContent = pixData[num - 1].name;
+                            figureOpt.append(imgOpt, figCaptOpt);
+                            container.append(figureOpt);
+                        }
+                        activityInstance.appendChild(container);
+                    }
+                }
+                // main buttons for feedbacks
+                // (= neutral button which is shown before any feedback button is chosen)
+                let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                for (let btn of fbMainBtns) {
+                    btn.addEventListener('click', function () {
+                        const cmId = this.getAttribute("data-cmid");
+                        openFeedback(cmId);
+                    });
+                }
+                // feedback buttons
+                let fbBtns = document.getElementsByClassName("block_activityfeedback_btn");
+                for (let btn of fbBtns) {
+                    btn.addEventListener('click', function () {
+                        // for fast reaction, todolig pruefen
+                        //this.classList.remove("block_activityfeedback_not_selected");
+                        this.classList.add("block_activityfeedback_selected");
+
+                        const cmid = this.getAttribute("data-cmid");
+                        const fbid = this.getAttribute("data-fbid");
+                        const fbname = this.getAttribute("data-fbname");
+                        setFeedback(cmid,fbid,fbname,courseid,userid);
+                    });
+                }
+                // muss hier im done sein, weil sonst evtl. Attribut nicht gefunden wird!
+                getFeedback(courseid, userid);
+                //});
+                window.console.log("displayPictures: end done");
+            }, //).catch(Notification.exception); //
+            fail: notification.exception
+            //todolig: unklar wann .fail/.catch, wann hier mit Doppelpunkt
+        }
+    ]);
+    window.console.log("displayPictures: end");
+}
+function getFeedback(courseid, userid)
+{
+    window.console.log("getFeedback: start");
+    Ajax.call([
+        {
+            methodname: 'block_activityfeedback_get_feedback_data',
+            args: {
+                courseid: courseid
+            },
+            done: function (fbData) {
+                window.console.log("getFeedback: start done");
+
+                //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
+                //ajaxResult0.forEach(function(fbitem) {
+                //siehe generell als Tipp: https://www.learningrobo.com/2021/10/modern-feedback-form-using-html-css.html
+                for (const fbItem of fbData) {
+                    if(fbItem.userid === userid)
+                    {
+                        let container=document.querySelector(`figure.block_activityfeedback_container[data-cmid="${fbItem.cmid}"]`);
+                        //container sollte es nur 1 geben mit dieser id
+                        // document.getElementsByClassName("block_activityfeedback_container")
+                        // let fbnotselected = container.getElementsByClassName("block_activityfeedback_btn")
+                        //     .not(`[data-fbid="{fbitem.fbid}"]`);
+                        // //todolig: zuerst entfernen
+                        // fbnotselected.classList.remove("block_activityfeedback_selected");
+                        // fbnotselected.classList.add("block_activityfeedback_not_selected");
+                        // let fbselected = container.getElementsByClassName("block_activityfeedback_btn")
+                        //     .querySelector(`[data-fbid="{fbitem.fbid}"]`);
+
+                        // statt hinzu/entfernen mit toggle: x.classList.toggle("fa-thumbs-down");
+                        //https://www.w3schools.com/howto/howto_js_toggle_like.asp
+                        if(container !== undefined && container !== null) { // needed if course_module was deleted
+                            let fbPix = container.querySelectorAll("img.block_activityfeedback_btn");
+
+                            for (let pix of fbPix) {
+                                if(pix.getAttribute("data-fbid") == fbItem.fbid) {
+                                    window.console.log("pix true");
+                                    pix.classList.remove("block_activityfeedback_not_selected");
+                                    pix.classList.add("block_activityfeedback_selected");
+                                }
+                                else {
+                                    window.console.log("pix false");
+                                    pix.classList.remove("block_activityfeedback_selected");
+                                    pix.classList.add("block_activityfeedback_not_selected");
+                                }
+                            }
+                    // let fbSelected = container.querySelector(`img.block_activityfeedback_btn[data-fbid="${fbItem.fbid}"]`);
+                            // fbSelected.classList.remove("block_activityfeedback_not_selected");
+                            // fbSelected.classList.add("block_activityfeedback_selected");
+                        }
+                    }
+                }//);
+                window.console.log("getFeedback: end done");
+            },
+            fail: notification.exception
+            //todolig: unklar wann .fail/.catch, wann hier mit Doppelpunkt
+        }
+    ]);
+    window.console.log("getFeedback: end");
+}
+function openFeedback(cmid)
+{
+    window.console.log("openFeedback");
+    window.console.log(cmid);
+    //siehe https://docs.moodle.org/dev/Web_service_API_functions
+    //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
+}
+function setFeedback(cmid,fbid,fbname,courseid,userid)
+{
+    window.console.log("setFeedback: start");
+    //siehe https://docs.moodle.org/dev/Web_service_API_functions
+    //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
+
+    Ajax.call([
+        {
+            methodname: 'block_activityfeedback_set_feedback_data',
+            args: {
+                func: 'insert',
+                cmid: cmid, //event.data.moduleId,
+                fbid: fbid,//event.data.reactionSelect,
+                fbname: fbname
+            },
+            done: function () {
+                window.console.log("setFeedback: start done");
+                getFeedback(courseid,userid);
+                window.console.log("setFeedback: end done");
+            },
+            fail: notification.exception
+            //todolig: unklar wann .fail/.catch, wann hier mit Doppelpunkt
+        }
+    ]);
+    window.console.log("setFeedback: end");
+}
+//todolig: fuer str.get_string, fkt. zwar, aber gibt neu davor Exception: testjs.js:1 Uncaught undefined
+// https://docs.moodle.org/dev/Useful_core_Javascript_modules#Language_strings_.28core.2Fstr.29
+// require(['core/str'], function(str) {
+//     // start retrieving the localized string; store the promise that some time in the future the string will be there.
+//     var editaPresent = str.get_string('activityfeedback', 'block_activityfeedback');
+//     // as soon as the string is retrieved, i.e. the promise has been fulfilled,
+//     // edit the text of a UI element so that it then is the localized string
+//     // Note: $.when can be used with an arbitrary number of promised things
+//     jQuery.when(editaPresent).done(function(localizedEditString) {
+//         window.console.log(localizedEditString);
+//     });
+// });
+
+//https://docs.moodle.org/dev/AJAX
+require(['core/ajax'], function(ajax) {
+    var promises = ajax.call([
+        {methodname: 'core_get_string', args: {component: 'block_activityfeedback', stringid: 'activityfeedback'}}
+    ]);
+
+    promises[0].done(function (response) {
+        window.console.log('block_activityfeedback/activityfeedback is' + response);
+    }).fail(function (ex) {
+        window.console.log(ex);// do something with the exception
+    });
+});
+
+//https://docs.moodle.org/dev/Javascript_Modules
+//const formal = () => Str.get_string('activityfeedback', 'block_activityfeedback', '');

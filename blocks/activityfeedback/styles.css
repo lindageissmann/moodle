@@ -1,12 +1,35 @@
 /*update version.php to see changes*/
 .block_activityfeedback_container {
+    /*https://wiki.selfhtml.org/wiki/HTML/Tutorials/Bilder_im_Internet/Bilder_mit_CSS_formatieren#Der_Normalfall:_mehrere_Bilder_nebeneinander*/
+    /*display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+    gap: 1em;
+    display: inline-block;*/
+    display: flex;
     color: red;
     position: absolute;
     left: 80%;
     top: 20%;
-    z-index: 1;
+    /*z-index: 1;*/
 }
-.activityfeedback_btn { cursor: pointer; }
+.img.block_activityfeedback_btn_main:hover {
+    transform:rotate(360deg);
+}
+.block_activityfeedback_btn { 
+    cursor: pointer; 
+}
+img.block_activityfeedback_selected {
+    border: 5px solid red;
+}
+img.block_activityfeedback_not_selected {
+    filter: grayscale(100%);
+}
+
+/*img:hover {
+    transform: scaleY(-1);
+} auf KOpf drehen vermutlich*/
+/*rundherum: transform:rotate(360deg);*/
+/*animation: 1s infinite alternate pulse; z.B. mit scale:1.2 vergrössern/verkleinern*/
 
 /*
 https://docs.moodle.org/dev/Blocks
