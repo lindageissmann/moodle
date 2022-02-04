@@ -5,24 +5,78 @@
     grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
     gap: 1em;
     display: inline-block;*/
-    display: flex;
-    color: red;
+    /*display: flex;*/
+    /*color: red;*/
     position: absolute;
     left: 80%;
-    top: 20%;
+    top: 0%;
     /*z-index: 1;*/
 }
-.img.block_activityfeedback_btn_main:hover {
-    transform:rotate(360deg);
+img.block_activityfeedback_btn_main {
+    max-width: 40px;/*todolig ok? ähnl. icon, siehe smartphone*/
+    height: auto;
+    /*transform:rotate(360deg);*/
 }
 .block_activityfeedback_btn { 
-    cursor: pointer; 
+    cursor: pointer;
+    /*display: inline-block;*//*anstatt bei popover_content flex*/
+}
+.block_activityfeedback_figopt {
+    display: inline-block;
 }
 img.block_activityfeedback_selected {
     border: 5px solid red;
 }
 img.block_activityfeedback_not_selected {
     filter: grayscale(100%);
+}
+.popover_wrapper {
+    /*position: relative;*/;
+    /*margin-top: 1.5rem;*/
+    /*display: inline-block;*/
+}
+.popover_content {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: calc(0.5rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
+    top: -1.5rem;/*etwa gleich hoch wie imgMain*/
+    /*transform: translate(0, 10px);*/
+    background-color: #b3b2b2;
+    /*padding: 1.5rem;*/
+    box-shadow: -5px 5px 10px 0px #b3b2b2;
+    width: max-content;/*damit inline-block fkt. dass nebeneinander*/
+    /*display: flex;*/
+}
+.popover_content:before { /*arrow*/
+    position: absolute;
+    z-index: -1; /*hinter allem*/
+    content: "";
+    /*right: calc(50% - 10px);
+    top: 22px;*/
+    right: -4%;
+    top: calc(50% - 20%);
+    border-style: solid;
+    border-width: 10px 0px 10px 10px;/*Dreieck nach rechts zeigend, rechts angemacht*/
+    border-color: transparent transparent transparent #b3b2b2;/*Dreieck, links flach*/
+    /*transition-duration: 0.3s;
+    transition-property: transform;*/
+    /*evtl. besser verständlich:
+    https://stackoverflow.com/questions/23420617/emulate-the-bootstrap-side-popover-without-javascript
+     */
+}
+/*was mit content (descendant von wrapper) passiert bei hover*/
+/*.popover_wrapper:hover .popover_content {*/
+/*    z-index: 10; !*vor allem*!*/
+/*    opacity: 1;*/
+/*    visibility: visible;*/
+/*    !*transform: translate(0, -20px);*/
+/*    transition: all 0.5s cubic-bezier(0.75, -0.02, 0.2, 0.97);*!*/
+/*}*/
+.popover_content.popover_visible {
+    z-index: 100; /*vor restl. Elems angeordnet*/
+    opacity: 1;
+    visibility: visible;
 }
 
 /*img:hover {

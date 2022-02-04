@@ -14,6 +14,7 @@
 import Ajax from 'core/ajax';
 //import {exception as displayError} from 'core/notification';
 import notification from 'core/notification';
+//import bootstrap from bootstrap;
 //define(['jquery', 'core/ajax', 'core/notification']);
 export const init = (args) => {
     const userid = parseInt(args.userid);
@@ -48,22 +49,48 @@ function displayPictures(rootPath, courseid, userid)
                         container.setAttribute("data-cmid", courseModuleId);
                         //node.classList.add('MyClass');
                         // main button for feedback
-                        let figureMain = document.createElement("figure");
+                        //let figureMain = document.createElement("figure");
                         let imgMain = document.createElement("img");
                         imgMain.className = "block_activityfeedback_btn_main";
-                        imgMain.src = rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                        imgMain.src = rootPath + "/blocks/activityfeedback/pix/thumbsup.png";//todo: bild eckig via css rund machen
                         //imgMain.alt = Str.get_string('activityfeedback', 'block_activityfeedback'); //todolig
                         imgMain.setAttribute("data-cmid", courseModuleId);
-                        let figCaptMain = document.createElement("figcaption");
+                        //let figCaptMain = document.createElement("figcaption");
                         //figCaptMain.textContent = Str.get_string('activityfeedback', 'block_activityfeedback');
                         //window.console.log(Str.get_string('activityfeedback', 'block_activityfeedback'));
                         //window.console.log(formal);
-                        figureMain.append(imgMain, figCaptMain);
-                        container.append(figureMain);
+                        //figureMain.append(imgMain, figCaptMain);
+                        //container.append(figureMain);
+
+                        //Achtung: neu ist glaube ich scrollbalken wegen Bildern, auch senkrecht innerhalb!
+
+
+
+                        imgMain.classList.add("popover_title");
+                        container.classList.add("popover_wrapper");
+                        let popover = document.createElement("figure");
+                        //figure statt div, weil div unter activityinstance ist css vorgeschrieben: inline-block
+                        popover.className = "popover_content";
+                        //popover.textContent = "text text text";
+                        //evtl. noch if isvisible:
+                        //https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
+                        //clicklistener entfernen?
+                        //https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
+                        //fkt. aktuell dann gar nicht mehr
+                        /*document.addEventListener("click", function(event) {
+                            if(!popover.contains(event.target))
+                            {
+                                //hide
+                                //popover.style.display = "none";
+                                popover.classList.remove("popover_visible");
+                            }
+                        });*/
+
                         // feedback buttons for option 1 to max. 7, max. number of elements is given by length of pixData array
                         for (let num = 1; num <= 7 && num <= pixData.length; num++) {
                             let figureOpt = document.createElement("figure");
                             figureOpt.id = "figureopt" + num;//todolig
+                            figureOpt.className = "block_activityfeedback_figopt";
                             let imgOpt = document.createElement("img");
                             imgOpt.className = "block_activityfeedback_btn";
                             imgOpt.src = pixData[num - 1].url;
@@ -74,8 +101,15 @@ function displayPictures(rootPath, courseid, userid)
                             let figCaptOpt = document.createElement("figcaption");
                             figCaptOpt.textContent = pixData[num - 1].name;
                             figureOpt.append(imgOpt, figCaptOpt);
-                            container.append(figureOpt);
+                            //figureOpt.append(imgOpt);
+                            popover.append(figureOpt);
+                            //popover.append(imgOpt);
+                            //container.append(figureOpt);
                         }
+
+                        container.append(imgMain, popover);
+
+                        //statt innerHTML immer textContent verwenden aus Sich.gründen bei rein Text
                         activityInstance.appendChild(container);
                     }
                 }
@@ -84,8 +118,8 @@ function displayPictures(rootPath, courseid, userid)
                 let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
                 for (let btn of fbMainBtns) {
                     btn.addEventListener('click', function () {
-                        const cmId = this.getAttribute("data-cmid");
-                        openFeedback(cmId);
+                        //const cmId = this.getAttribute("data-cmid");
+                        openFeedback(this);
                     });
                 }
                 // feedback buttons
@@ -112,6 +146,21 @@ function displayPictures(rootPath, courseid, userid)
         }
     ]);
     window.console.log("displayPictures: end");
+}
+function openFeedback(mainBtn)
+{
+    const cmId = mainBtn.getAttribute("data-cmid");
+    window.console.log("openFeedback");
+    window.console.log(cmId);
+    //siehe https://docs.moodle.org/dev/Web_service_API_functions
+    //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
+    //mainBtn.classList.add("popover_visible");
+    let popover = mainBtn.nextElementSibling;
+    popover.classList.toggle("popover_visible");
+    //bei Klick ausserhalb schliessen: //https://www.w3schools.com/howto/howto_css_modals.asp
+    //https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
+    //https://css-tricks.com/dangers-stopping-event-propagation/
+
 }
 function getFeedback(courseid, userid)
 {
@@ -172,13 +221,6 @@ function getFeedback(courseid, userid)
         }
     ]);
     window.console.log("getFeedback: end");
-}
-function openFeedback(cmid)
-{
-    window.console.log("openFeedback");
-    window.console.log(cmid);
-    //siehe https://docs.moodle.org/dev/Web_service_API_functions
-    //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
 }
 function setFeedback(cmid,fbid,fbname,courseid,userid)
 {
