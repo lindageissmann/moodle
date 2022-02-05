@@ -26,7 +26,6 @@ class set_feedback_data extends external_api {
         return new external_function_parameters(
         // an external_description can be: external_value, external_single_structure or external_multiple structure
                 array(
-                    'func' => new external_value(PARAM_TEXT, 'sql command', VALUE_REQUIRED),
                     'cmid' => new external_value(PARAM_INT, 'id of course module', VALUE_REQUIRED),
                     'fbid' => new external_value(PARAM_INT, 'id of chosen feedback option', VALUE_REQUIRED),
                     'fbname' => new external_value(PARAM_TEXT, 'name of chosen feedback optioen', VALUE_REQUIRED)
@@ -47,8 +46,7 @@ class set_feedback_data extends external_api {
      *
      * https://docs.moodle.org/dev/External_functions_API
      * userid not as parameter: 
-     * 
-     * @param string $func Function name of database update
+     *
      * @param int $userid User ID
      * @param int $courseid Course ID
      * @param int $cmid Course Module ID
@@ -57,7 +55,7 @@ class set_feedback_data extends external_api {
      * @throws invalid_parameter_exception
      * @throws dml_exception
      */
-    public static function execute(string $func, int $cmid, int $fbid, string $fbname): bool {
+    public static function execute(int $cmid, int $fbid, string $fbname): bool {
         global $DB, $USER;
 
         $success = true;
@@ -68,7 +66,6 @@ class set_feedback_data extends external_api {
 
         try {
             $params = self::validate_parameters(self::execute_parameters(), array(
-                            'func' => $func,
                             'cmid' => $cmid,
                             'fbid' => $fbid,
                             'fbname' => $fbname
@@ -89,64 +86,48 @@ class set_feedback_data extends external_api {
             // aber dadurch keine REST-Anfrage möglich? -> doch vermutlich schon, Accesstoken ist ja auch best. User?!
             $params += array('userid' => $userid);
 
-            switch ($params['func']) {
-
-                // insert row into block_activityfeedback table
-                case 'insert':
+            //vom update:
+            try {
+                // search for possibly existing row (same activity and user)
+                $target = $DB->get_record(
+                        $table, array(
+                                'cmid' => $params['cmid'],
+                                'userid' => $params['userid']
+                        ),'*',IGNORE_MISSING
+                );
+                // INSERT if not found (false is returned if not found)
+                if (!$target) {
                     $dataobject = new stdClass();
                     $dataobject->cmid = $params['cmid'];
                     $dataobject->userid = $params['userid'];
                     $dataobject->fbid = $params['fbid'];
                     $dataobject->fbname = $params['fbname'];
 
-                    try {
-                        $DB->insert_record($table, $dataobject, false); //todolig: u. false für bulk
-                    } catch (dml_exception $e) {
-                        $success = false;
-                    }
+                    $DB->insert_record($table, $dataobject, false); //todolig: u. false für bulk
 
-                    break;
-
-                // delete row from block_activityfeedback table
-                case 'delete':
+                }
+                // DELETE if selected feedback option is also the same
+                else if ($target->fbid == $fbid) {
                     $conditions = array(
                             'cmid' => $params['cmid'],
                             'userid' => $params['userid'],
-                            'fbid' => $params['fbid'],
-                            'fbname' => $params['fbname']
+                            'fbid' => $params['fbid']
                     );
-                    try {
-                        $DB->delete_records($table, $conditions);
-                    } catch (dml_exception $e) {
-                        $success = false;
-                    }
+                    $DB->delete_records($table, $conditions);
+                }
+                // UPDATE if found but feedback option is another
+                else {
+                    // update feedback rate
+                    $target->fbid = $fbid;
+                    $target->fbname = $fbname;
+                    // overwrite the selected row
+                    $DB->update_record($table, $target);
+                }
 
-                    break;
-
-                // update row of block_activityfeedback table
-                case 'update':
-                    try {
-                        // search for the correct row because 'update_record' needs row id
-                        $target = $DB->get_record(
-                                $table, array(
-                                        'cmid' => $params['cmid'],
-                                        'userid' => $params['userid']
-                                )
-                        );
-
-                        // update feedback rate
-                        $target->fbid = $fbid;
-                        $target->fbname = $fbname;
-
-                        // overwrite the selected row
-                        $DB->update_record($table, $target);
-
-                    } catch (dml_exception $e) {
-                        $success = false;
-                        // todolig: return 'Exception : ' . $e->getMessage() . '\n'; // error_log o.ä.
-                        error_log("blablabla".$e->getMessage());
-                    }
-                    break;
+            } catch (dml_exception $e) {
+                $success = false;
+                // todolig: return 'Exception : ' . $e->getMessage() . '\n'; // error_log o.ä.
+                error_log("blablabla".$e->getMessage());
             }
         }
         return $success;

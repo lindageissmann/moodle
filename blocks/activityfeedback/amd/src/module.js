@@ -14,7 +14,7 @@
 import Ajax from 'core/ajax';
 //import {exception as displayError} from 'core/notification';
 import notification from 'core/notification';
-//import bootstrap from bootstrap;
+//import * as mdlcfg from 'core/config';
 //define(['jquery', 'core/ajax', 'core/notification']);
 export const init = (args) => {
     const userid = parseInt(args.userid);
@@ -24,6 +24,19 @@ export const init = (args) => {
     //warum fkt. hier jquery?
     //jquery: .done(), .success, .fail, .always
     //.then, .when
+    window.console.log("config:");
+    //window.console.log(mdlcfg.wwwroot);
+    window.rootPath = args.rootpath;
+    //import gibt Fehler
+    //https://docs.moodle.org/dev/Useful_core_Javascript_modules
+    //https://stackoverflow.com/questions/5915258/how-to-load-external-js-file-into-moodle
+
+    //require:
+    //https://docs.moodle.org/dev/AJAX
+    //import:
+    //https://docs.moodle.org/dev/Javascript_Modules
+    //Uncaught undefined
+    //window.console.log(rootPath);
     displayPictures(rootPath, courseid, userid);
     //getFeedback(courseid, userid); // todolig! gibt hier race condition, dass getFeedback end done noch vor displayPict start done
 };
@@ -76,15 +89,29 @@ function displayPictures(rootPath, courseid, userid)
                         //https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
                         //clicklistener entfernen?
                         //https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
-                        //fkt. aktuell dann gar nicht mehr
-                        /*document.addEventListener("click", function(event) {
-                            if(!popover.contains(event.target))
+                        //bei Klick ausserhalb schliessen: //https://www.w3schools.com/howto/howto_css_modals.asp
+                        //https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
+                        //https://css-tricks.com/dangers-stopping-event-propagation/
+                        document.addEventListener("click", function(event) {
+                            if(!popover.contains(event.target) && !container.contains(event.target))
                             {
-                                //hide
-                                //popover.style.display = "none";
+                                //hide if click is outside popover and main feedback button
                                 popover.classList.remove("popover_visible");
+                                window.console.log("klick nicht auf popover");
                             }
-                        });*/
+                            else {
+                                window.console.log("klick ist auf popover");
+                            }
+                        });
+                        //close visible popover if escape is pressed
+                        document.addEventListener("keyup", function(event) {
+                            if (event.which === 27) {
+                                let visiblePopover = document.querySelector("figure.popover_content.popover_visible");
+                                if(visiblePopover !== undefined && visiblePopover !== null) {
+                                    visiblePopover.classList.remove("popover_visible");
+                                }
+                            }
+                        });
 
                         // feedback buttons for option 1 to max. 7, max. number of elements is given by length of pixData array
                         for (let num = 1; num <= 7 && num <= pixData.length; num++) {
@@ -118,7 +145,6 @@ function displayPictures(rootPath, courseid, userid)
                 let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
                 for (let btn of fbMainBtns) {
                     btn.addEventListener('click', function () {
-                        //const cmId = this.getAttribute("data-cmid");
                         openFeedback(this);
                     });
                 }
@@ -126,14 +152,7 @@ function displayPictures(rootPath, courseid, userid)
                 let fbBtns = document.getElementsByClassName("block_activityfeedback_btn");
                 for (let btn of fbBtns) {
                     btn.addEventListener('click', function () {
-                        // for fast reaction, todolig pruefen
-                        //this.classList.remove("block_activityfeedback_not_selected");
-                        this.classList.add("block_activityfeedback_selected");
-
-                        const cmid = this.getAttribute("data-cmid");
-                        const fbid = this.getAttribute("data-fbid");
-                        const fbname = this.getAttribute("data-fbname");
-                        setFeedback(cmid,fbid,fbname,courseid,userid);
+                        setFeedback(this,courseid,userid);
                     });
                 }
                 // muss hier im done sein, weil sonst evtl. Attribut nicht gefunden wird!
@@ -156,15 +175,26 @@ function openFeedback(mainBtn)
     //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
     //mainBtn.classList.add("popover_visible");
     let popover = mainBtn.nextElementSibling;
-    popover.classList.toggle("popover_visible");
-    //bei Klick ausserhalb schliessen: //https://www.w3schools.com/howto/howto_css_modals.asp
-    //https://stackoverflow.com/questions/152975/how-do-i-detect-a-click-outside-an-element
-    //https://css-tricks.com/dangers-stopping-event-propagation/
-
+    //toggle visible
+    if(popover.classList.contains("popover_visible"))
+    {
+        popover.classList.remove("popover_visible");
+    }
+    else {
+        //set first other visible popover to not visible
+        // so that never two popovers are visible at the same time
+        let visiblePopover = document.querySelector("figure.popover_content.popover_visible");
+        if(visiblePopover !== undefined && visiblePopover !== null) {
+            visiblePopover.classList.remove("popover_visible");
+        }
+        popover.classList.add("popover_visible"); //toggle
+    }
 }
-function getFeedback(courseid, userid)
-{
+function getFeedback(courseid, userid) {
     window.console.log("getFeedback: start");
+    window.console.log("config2: ");
+    //window.console.log(mdlcfg.wwwroot);
+    window.console.log(window.rootPath);
     Ajax.call([
         {
             methodname: 'block_activityfeedback_get_feedback_data',
@@ -174,13 +204,22 @@ function getFeedback(courseid, userid)
             done: function (fbData) {
                 window.console.log("getFeedback: start done");
 
+                let isBtnMainUpdated = false;
+
+                //todolig: zuerst einfahc mal zurücksetzen, weil evtl. von DB kein Datensatz mehr, da gelöscht
+                // auch für OptButtons
+                // let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                // for (let btn of fbMainBtns) {
+                //     btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                // }
+
                 //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
                 //ajaxResult0.forEach(function(fbitem) {
                 //siehe generell als Tipp: https://www.learningrobo.com/2021/10/modern-feedback-form-using-html-css.html
                 for (const fbItem of fbData) {
-                    if(fbItem.userid === userid)
-                    {
-                        let container=document.querySelector(`figure.block_activityfeedback_container[data-cmid="${fbItem.cmid}"]`);
+                    if (fbItem.userid === userid) {
+                let container = document.querySelector(`figure.block_activityfeedback_container[data-cmid="${fbItem.cmid}"]`);
+                        let btnMain = document.querySelector(`img.block_activityfeedback_btn_main[data-cmid="${fbItem.cmid}"]`);
                         //container sollte es nur 1 geben mit dieser id
                         // document.getElementsByClassName("block_activityfeedback_container")
                         // let fbnotselected = container.getElementsByClassName("block_activityfeedback_btn")
@@ -193,27 +232,44 @@ function getFeedback(courseid, userid)
 
                         // statt hinzu/entfernen mit toggle: x.classList.toggle("fa-thumbs-down");
                         //https://www.w3schools.com/howto/howto_js_toggle_like.asp
-                        if(container !== undefined && container !== null) { // needed if course_module was deleted
+                        if (container !== undefined && container !== null) { // needed if course_module was deleted
                             let fbPix = container.querySelectorAll("img.block_activityfeedback_btn");
 
+
                             for (let pix of fbPix) {
-                                if(pix.getAttribute("data-fbid") == fbItem.fbid) {
+                                if (pix.getAttribute("data-fbid") == fbItem.fbid) {
                                     window.console.log("pix true");
+                                    btnMain.src = pix.getAttribute("src"); //get src as it is, not resolved
+                                    isBtnMainUpdated = true;
                                     pix.classList.remove("block_activityfeedback_not_selected");
                                     pix.classList.add("block_activityfeedback_selected");
-                                }
-                                else {
+                                } else {
                                     window.console.log("pix false");
                                     pix.classList.remove("block_activityfeedback_selected");
                                     pix.classList.add("block_activityfeedback_not_selected");
                                 }
                             }
-                    // let fbSelected = container.querySelector(`img.block_activityfeedback_btn[data-fbid="${fbItem.fbid}"]`);
-                            // fbSelected.classList.remove("block_activityfeedback_not_selected");
-                            // fbSelected.classList.add("block_activityfeedback_selected");
+                            if(!isBtnMainUpdated)
+                            {
+                                btnMain.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                                isBtnMainUpdated = true;
+                            }
                         }
                     }
                 }//);
+
+                // auch falls zu kurs/user gar nichts auf DB
+                //if no feedback option is set, reset main button
+                // if (!isBtnMainUpdated) {
+                //     //todolig: import core/config nicht funktioniert, daher globa
+                //     //alternativ als param an jed. Fkt. übergeb
+                //     let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                //     for (let btn of fbMainBtns) {
+                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                //     }
+                // }
+
+
                 window.console.log("getFeedback: end done");
             },
             fail: notification.exception
@@ -222,24 +278,128 @@ function getFeedback(courseid, userid)
     ]);
     window.console.log("getFeedback: end");
 }
-function setFeedback(cmid,fbid,fbname,courseid,userid)
+function getFeedbackForActivity(cmid, userid) {
+    window.console.log("getFeedbackForActivity: start");
+    window.console.log(userid); // todolig userid ganz entfernen, spätere Prüfung bereits entfernt
+
+    Ajax.call([
+        {
+            methodname: 'block_activityfeedback_get_feedback_activity',
+            args: {
+                cmid: cmid
+            },
+            done: function (fbData) {
+                window.console.log("getFeedbackForActivity: start done");
+
+                let isBtnMainUpdated = false;
+
+                // //todolig: zuerst einfahc mal zurücksetzen, weil evtl. von DB kein Datensatz mehr, da gelöscht
+                // // auch für OptButtons
+                // let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                // for (let btn of fbMainBtns) {
+                //     btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                // }
+
+                let fbItem = fbData[0];
+
+                let btnMain = document.querySelector(`img.block_activityfeedback_btn_main[data-cmid="${cmid}"]`);
+
+                //if(fbItem !== undefined && fbItem !== null && fbItem.userid === userid) {
+                //if(fbItem.userid === userid)
+                    let container = document.querySelector(`figure.block_activityfeedback_container[data-cmid="${cmid}"]`);
+
+                    // statt hinzu/entfernen mit toggle: x.classList.toggle("fa-thumbs-down");
+                    //https://www.w3schools.com/howto/howto_js_toggle_like.asp
+                    if (container !== undefined && container !== null) { // needed if course_module was deleted
+                        let fbPix = container.querySelectorAll("img.block_activityfeedback_btn");
+
+                        for (let pix of fbPix) {
+                            if (fbItem === undefined || fbItem === null) {
+                                window.console.log("pix neutral");
+                                pix.classList.remove("block_activityfeedback_selected");
+                                pix.classList.remove("block_activityfeedback_not_selected");
+                            }
+                            else if (pix.getAttribute("data-fbid") == fbItem.fbid) {
+                                window.console.log("pix true");
+                                btnMain.src = pix.getAttribute("src"); //get src as it is, not resolved
+                                isBtnMainUpdated = true;
+                                pix.classList.remove("block_activityfeedback_not_selected");
+                                pix.classList.add("block_activityfeedback_selected");
+                            }
+                            else {
+                                window.console.log("pix false");
+                                pix.classList.remove("block_activityfeedback_selected");
+                                pix.classList.add("block_activityfeedback_not_selected");
+                            }
+                        }
+                    }
+                //}
+
+                if(!isBtnMainUpdated)
+                {
+                    btnMain.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                    isBtnMainUpdated = true;
+
+
+                }
+
+                // auch falls zu kurs/user gar nichts auf DB
+                //if no feedback option is set, reset main button
+                // if (!isBtnMainUpdated) {
+                //     //todolig: import core/config nicht funktioniert, daher globa
+                //     //alternativ als param an jed. Fkt. übergeb
+                //     let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                //     for (let btn of fbMainBtns) {
+                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                //     }
+                // }
+
+
+                window.console.log("getFeedback: end done");
+            },
+            fail: notification.exception
+            //todolig: unklar wann .fail/.catch, wann hier mit Doppelpunkt
+        }
+    ]);
+    window.console.log("getFeedback: end");
+}
+function setFeedback(btn,courseid,userid)
 {
     window.console.log("setFeedback: start");
     //siehe https://docs.moodle.org/dev/Web_service_API_functions
     //mod_data für DB-Zugriffe, aber nicht via Ajax:( z.B. mod_data_add_entry
 
+    // for fast reaction, todolig pruefen
+    //this.classList.remove("block_activityfeedback_not_selected");
+    //evtl. mit toggle, auch deselekt., evtl. sieht man gar nicht mehr
+    btn.classList.add("block_activityfeedback_selected");
+
+    const cmid = btn.getAttribute("data-cmid");
+    const fbid = btn.getAttribute("data-fbid");
+    const fbname = btn.getAttribute("data-fbname");
+
+    //popover not visible if feedback option was selected
+    let popover = btn.parentElement.parentElement;
+    popover.classList.remove("popover_visible");
+    //mainBtn auch grad direkt setzen ohne Server AW
+    //todolig: aber delete?
+    let mainBtn = popover.previousElementSibling;
+    mainBtn.src = btn.getAttribute("src");
+
     Ajax.call([
         {
             methodname: 'block_activityfeedback_set_feedback_data',
             args: {
-                func: 'insert',
                 cmid: cmid, //event.data.moduleId,
                 fbid: fbid,//event.data.reactionSelect,
                 fbname: fbname
+                // sql function (insert/update/delete)
+                // is defined by server
             },
             done: function () {
                 window.console.log("setFeedback: start done");
-                getFeedback(courseid,userid);
+                //getFeedback(courseid,userid);
+                getFeedbackForActivity(cmid, userid);
                 window.console.log("setFeedback: end done");
             },
             fail: notification.exception

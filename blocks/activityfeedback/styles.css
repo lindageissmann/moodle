@@ -13,19 +13,27 @@
     /*z-index: 1;*/
 }
 img.block_activityfeedback_btn_main {
-    max-width: 40px;/*todolig ok? ähnl. icon, siehe smartphone*/
+    cursor: pointer;
+    max-width: 40px;
+    /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
     height: auto;
     /*transform:rotate(360deg);*/
 }
 .block_activityfeedback_btn { 
-    cursor: pointer;
-    /*display: inline-block;*//*anstatt bei popover_content flex*/
+    /*cursor: pointer;*/
+    max-width: 80px;
+    height: auto;
 }
 .block_activityfeedback_figopt {
-    display: inline-block;
+    cursor: pointer;
+    display: inline-block;/*inline-table auch mögl.*/
+    margin: 0.5rem;
+    color: white;
+    /*width: max-content nicht nötig, schadet nicht*/
 }
 img.block_activityfeedback_selected {
-    border: 5px solid red;
+    /*border: 5px solid red;*/
+    /*evtl. Text umrahmen/fett o.ä. bild schwierig weil vermutl. rund*/
 }
 img.block_activityfeedback_not_selected {
     filter: grayscale(100%);
@@ -42,11 +50,13 @@ img.block_activityfeedback_not_selected {
     right: calc(0.5rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
     top: -1.5rem;/*etwa gleich hoch wie imgMain*/
     /*transform: translate(0, 10px);*/
-    background-color: #b3b2b2;
+    background-color: #502479; /*Corporate Violett statt grau b3b2b2;*/
     /*padding: 1.5rem;*/
-    box-shadow: -5px 5px 10px 0px #b3b2b2;
+    box-shadow: -5px 5px 10px 0px #7d0a52; /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*/
     width: max-content;/*damit inline-block fkt. dass nebeneinander*/
+    /*mit max-content auch fkt auch alternativen ohne width*/
     /*display: flex;*/
+    border-radius: 8px;
 }
 .popover_content:before { /*arrow*/
     position: absolute;
@@ -54,11 +64,11 @@ img.block_activityfeedback_not_selected {
     content: "";
     /*right: calc(50% - 10px);
     top: 22px;*/
-    right: -4%;
+    right: -0.6rem;
     top: calc(50% - 20%);
     border-style: solid;
     border-width: 10px 0px 10px 10px;/*Dreieck nach rechts zeigend, rechts angemacht*/
-    border-color: transparent transparent transparent #b3b2b2;/*Dreieck, links flach*/
+    border-color: transparent transparent transparent #502479;/*Dreieck, links flach*/
     /*transition-duration: 0.3s;
     transition-property: transform;*/
     /*evtl. besser verständlich:
