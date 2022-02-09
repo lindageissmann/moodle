@@ -14,7 +14,19 @@
 import Ajax from 'core/ajax';
 //import {exception as displayError} from 'core/notification';
 import notification from 'core/notification';
-//import * as mdlcfg from 'core/config';
+
+//siehe backpackactions.js
+// import $ from 'jquery';
+// import selectors from 'core_badges/selectors';
+// import {get_string as getString} from 'core/str';
+// import Pending from 'core/pending';
+// import ModalFactory from 'core/modal_factory';
+// import ModalEvents from 'core/modal_events';
+
+// was not usable and global const not recommended
+// import Config from 'core/config';
+
+
 //define(['jquery', 'core/ajax', 'core/notification']);
 export const init = (args) => {
     const userid = parseInt(args.userid);
@@ -24,23 +36,23 @@ export const init = (args) => {
     //warum fkt. hier jquery?
     //jquery: .done(), .success, .fail, .always
     //.then, .when
-    window.console.log("config:");
-    //window.console.log(mdlcfg.wwwroot);
-    window.rootPath = args.rootpath;
+    //window.console.log(Config.wwwroot);
     //import gibt Fehler
     //https://docs.moodle.org/dev/Useful_core_Javascript_modules
     //https://stackoverflow.com/questions/5915258/how-to-load-external-js-file-into-moodle
 
+    //window.rootPath = args.rootpath;
     //require:
     //https://docs.moodle.org/dev/AJAX
     //import:
     //https://docs.moodle.org/dev/Javascript_Modules
     //Uncaught undefined
-    //window.console.log(rootPath);
     displayPictures(rootPath, courseid, userid);
     //getFeedback(courseid, userid); // todolig! gibt hier race condition, dass getFeedback end done noch vor displayPict start done
+    window.console.log("nach display");
 };
 
+//const displayPictures = (rootPath, courseid, userid) =>
 function displayPictures(rootPath, courseid, userid)
 {
     window.console.log("displayPictures: start");
@@ -51,8 +63,11 @@ function displayPictures(rootPath, courseid, userid)
             done: function (pixData) {
                 window.console.log("displayPictures: start done");
                 const activities = document.getElementsByClassName("activity");
+                let nummer = 0;
                 for (const activity of activities)
                 {
+                    nummer = nummer + 1;
+                    window.console.log("activity " + nummer);
                     let activityInstance = activity.getElementsByClassName("activityinstance")[0];
                     // check if exists, because e.g. activity 'label' has no <div> child element with class 'activityinstance'
                     if(activityInstance !== undefined && activityInstance !== null) {
@@ -65,7 +80,8 @@ function displayPictures(rootPath, courseid, userid)
                         //let figureMain = document.createElement("figure");
                         let imgMain = document.createElement("img");
                         imgMain.className = "block_activityfeedback_btn_main";
-                        imgMain.src = rootPath + "/blocks/activityfeedback/pix/thumbsup.png";//todo: bild eckig via css rund machen
+                        imgMain.src = rootPath + "/blocks/activityfeedback/pix/feedbackmain.png";
+                        //todo: bild eckig via css rund machen
                         //imgMain.alt = Str.get_string('activityfeedback', 'block_activityfeedback'); //todolig
                         imgMain.setAttribute("data-cmid", courseModuleId);
                         //let figCaptMain = document.createElement("figcaption");
@@ -76,7 +92,6 @@ function displayPictures(rootPath, courseid, userid)
                         //container.append(figureMain);
 
                         //Achtung: neu ist glaube ich scrollbalken wegen Bildern, auch senkrecht innerhalb!
-
 
 
                         imgMain.classList.add("popover_title");
@@ -105,7 +120,7 @@ function displayPictures(rootPath, courseid, userid)
                         });
                         //close visible popover if escape is pressed
                         document.addEventListener("keyup", function(event) {
-                            if (event.which === 27) {
+                            if (event.which === 27 || event.key === "Escape" || event.code === "Escape" || event.keyCode === 27) {
                                 let visiblePopover = document.querySelector("figure.popover_content.popover_visible");
                                 if(visiblePopover !== undefined && visiblePopover !== null) {
                                     visiblePopover.classList.remove("popover_visible");
@@ -138,25 +153,33 @@ function displayPictures(rootPath, courseid, userid)
 
                         //statt innerHTML immer textContent verwenden aus Sich.gründen bei rein Text
                         activityInstance.appendChild(container);
+
+                        window.console.log("activity inner end " + nummer);
                     }
+                    window.console.log("activity outer end " + nummer);
                 }
                 // main buttons for feedbacks
                 // (= neutral button which is shown before any feedback button is chosen)
+                window.console.log("fbMainBtns 1");
                 let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
+                window.console.log("fbMainBtns 2");
                 for (let btn of fbMainBtns) {
                     btn.addEventListener('click', function () {
                         openFeedback(this);
                     });
                 }
+                window.console.log("after fbMainBtns ");
                 // feedback buttons
                 let fbBtns = document.getElementsByClassName("block_activityfeedback_btn");
                 for (let btn of fbBtns) {
                     btn.addEventListener('click', function () {
-                        setFeedback(this,courseid,userid);
+                        setFeedback(rootPath, this,courseid,userid);
                     });
                 }
+                window.console.log("after fbBtns ");
                 // muss hier im done sein, weil sonst evtl. Attribut nicht gefunden wird!
-                getFeedback(courseid, userid);
+                getFeedback(rootPath, courseid, userid);
+                window.console.log("after getFeedback ");
                 //});
                 window.console.log("displayPictures: end done");
             }, //).catch(Notification.exception); //
@@ -190,11 +213,8 @@ function openFeedback(mainBtn)
         popover.classList.add("popover_visible"); //toggle
     }
 }
-function getFeedback(courseid, userid) {
+function getFeedback(rootPath, courseid, userid) {
     window.console.log("getFeedback: start");
-    window.console.log("config2: ");
-    //window.console.log(mdlcfg.wwwroot);
-    window.console.log(window.rootPath);
     Ajax.call([
         {
             methodname: 'block_activityfeedback_get_feedback_data',
@@ -205,13 +225,6 @@ function getFeedback(courseid, userid) {
                 window.console.log("getFeedback: start done");
 
                 let isBtnMainUpdated = false;
-
-                //todolig: zuerst einfahc mal zurücksetzen, weil evtl. von DB kein Datensatz mehr, da gelöscht
-                // auch für OptButtons
-                // let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
-                // for (let btn of fbMainBtns) {
-                //     btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
-                // }
 
                 //https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
                 //ajaxResult0.forEach(function(fbitem) {
@@ -251,7 +264,7 @@ function getFeedback(courseid, userid) {
                             }
                             if(!isBtnMainUpdated)
                             {
-                                btnMain.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                                btnMain.src = rootPath + "/blocks/activityfeedback/pix/feedbackmain.png";
                                 isBtnMainUpdated = true;
                             }
                         }
@@ -265,7 +278,7 @@ function getFeedback(courseid, userid) {
                 //     //alternativ als param an jed. Fkt. übergeb
                 //     let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
                 //     for (let btn of fbMainBtns) {
-                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/feedbackmain.png";
                 //     }
                 // }
 
@@ -278,7 +291,7 @@ function getFeedback(courseid, userid) {
     ]);
     window.console.log("getFeedback: end");
 }
-function getFeedbackForActivity(cmid, userid) {
+function getFeedbackForActivity(rootPath, cmid, userid) {
     window.console.log("getFeedbackForActivity: start");
     window.console.log(userid); // todolig userid ganz entfernen, spätere Prüfung bereits entfernt
 
@@ -292,13 +305,6 @@ function getFeedbackForActivity(cmid, userid) {
                 window.console.log("getFeedbackForActivity: start done");
 
                 let isBtnMainUpdated = false;
-
-                // //todolig: zuerst einfahc mal zurücksetzen, weil evtl. von DB kein Datensatz mehr, da gelöscht
-                // // auch für OptButtons
-                // let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
-                // for (let btn of fbMainBtns) {
-                //     btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
-                // }
 
                 let fbItem = fbData[0];
 
@@ -337,7 +343,7 @@ function getFeedbackForActivity(cmid, userid) {
 
                 if(!isBtnMainUpdated)
                 {
-                    btnMain.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                    btnMain.src = rootPath + "/blocks/activityfeedback/pix/feedbackmain.png";
                     isBtnMainUpdated = true;
 
 
@@ -350,7 +356,7 @@ function getFeedbackForActivity(cmid, userid) {
                 //     //alternativ als param an jed. Fkt. übergeb
                 //     let fbMainBtns = document.getElementsByClassName("block_activityfeedback_btn_main");
                 //     for (let btn of fbMainBtns) {
-                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/thumbsup.png";
+                //         btn.src = window.rootPath + "/blocks/activityfeedback/pix/feedbackmain.png";
                 //     }
                 // }
 
@@ -363,7 +369,7 @@ function getFeedbackForActivity(cmid, userid) {
     ]);
     window.console.log("getFeedback: end");
 }
-function setFeedback(btn,courseid,userid)
+function setFeedback(rootPath, btn,courseid,userid)
 {
     window.console.log("setFeedback: start");
     //siehe https://docs.moodle.org/dev/Web_service_API_functions
@@ -399,7 +405,7 @@ function setFeedback(btn,courseid,userid)
             done: function () {
                 window.console.log("setFeedback: start done");
                 //getFeedback(courseid,userid);
-                getFeedbackForActivity(cmid, userid);
+                getFeedbackForActivity(rootPath, cmid, userid);
                 window.console.log("setFeedback: end done");
             },
             fail: notification.exception
@@ -422,17 +428,6 @@ function setFeedback(btn,courseid,userid)
 // });
 
 //https://docs.moodle.org/dev/AJAX
-require(['core/ajax'], function(ajax) {
-    var promises = ajax.call([
-        {methodname: 'core_get_string', args: {component: 'block_activityfeedback', stringid: 'activityfeedback'}}
-    ]);
-
-    promises[0].done(function (response) {
-        window.console.log('block_activityfeedback/activityfeedback is' + response);
-    }).fail(function (ex) {
-        window.console.log(ex);// do something with the exception
-    });
-});
 
 //https://docs.moodle.org/dev/Javascript_Modules
 //const formal = () => Str.get_string('activityfeedback', 'block_activityfeedback', '');

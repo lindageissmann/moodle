@@ -34,9 +34,6 @@ class block_activityfeedback extends block_base {
     
     public function init() {
         $this->title = get_string('pluginname', 'block_activityfeedback');
-        //$this->title = get_string('opt1nameadmin', 'block_activityfeedback');
-        //$num = 1;
-        //$this->title = get_string('opt'.$num.'nameadmin', 'block_activityfeedback');
     }
     // The PHP tag and the curly bracket for the class definition 
     // will only be closed after there is another function added in the next section.
@@ -46,18 +43,10 @@ class block_activityfeedback extends block_base {
             return $this->content;
         }
 
-        $this->content = new stdClass;
-        $this->content->text = 'The content of our activityfeedback block!';
-        $this->content->footer = 'Footer here...';
-		
-		/*if (empty($this->instance)) {
-            return $this->content;
-        }*/
-
-        //global $COURSE;
-        //// The other code.
-        //$url = new moodle_url('/blocks/activityfeedback/view.php', array('blockid' => $this->instance->id, 'courseid' => $COURSE->id));
-        //$this->content->footer = html_writer::link($url, get_string('addpage', 'block_activityfeedback'));
+        //no content, not display block
+        //$this->content = new stdClass;
+        //$this->content->text = 'The content of our activityfeedback block!';
+        //$this->content->footer = 'Footer here...';
 
         // siehe auch: https://docs.moodle.org/dev/Blocks#Lists
         // falls Liste anzeigen statt Text und Footer
@@ -79,36 +68,14 @@ class block_activityfeedback extends block_base {
             //    $this->title = $this->config->title;
             //}
     
-            if (empty($this->config->text)) {
-                $this->config->text = get_string('defaulttext', 'block_activityfeedback');
-            } else {
-                $this->content->text = $this->config->text;
-            }
-
-            if (!empty($this->config->optionactive)) {
-                $this->content->text .= $this->config->optionactive;
-            }
-
-            //$fs = get_file_storage();
+            //if (empty($this->config->text)) {
+            //    $this->config->text = get_string('defaulttext', 'block_activityfeedback');
+            //} else {
+            //    $this->content->text = $this->config->text;
+            //}
             //
-            //$optarray = array();
-            //$opt1active = get_config('block_activityfeedback', 'opt1activeadmin');
-            //if($opt1active) {
-            //    $file = get_config('block_activityfeedback', 'opt1pictureadmin');
-            //    if ($fs->file_exists(1, 'block_activityfeedback', 'activityfeedback_pix_admin', 0, '/', $file)) {
-            //        //$pixparam[$file]
-            //        $pixurl = block_activityfeedback_pix_url(1, 'activityfeedback_pix_admin', $file);
-            //        //$this->content->text = html_writer::img($pixurl,$alt="alternativ");
-            //        
-            //        //todolig, unklar
-            //        //You normally use an API function to generate these URL automatically, most often the file_rewrite_pluginfile_urls function. 
-            //        $bla2 = file_rewrite_pluginfile_urls($pixurl, 'pluginfile.php',
-            //                1, 'block_activityfeedback', 'activityfeedback_pix_admin', 0);
-            //        
-            //        $opt1name = get_config('block_activityfeedback', 'opt1nameadmin');
-            //        $optarray[0]['key'] = $opt1name;
-            //        $optarray[0]['value'] = $pixurl;
-            //    }
+            //if (!empty($this->config->optionactive)) {
+            //    $this->content->text .= $this->config->optionactive;
             //}
             
             //evtl. auch unter /pix speichern, und dann von da holen, falls zwar aktiv, aber kein Bild in Settings
@@ -132,12 +99,15 @@ class block_activityfeedback extends block_base {
             // A preferred approach is to pass css selectors for DOM elements that contain data-attributes for any required data,
             // or fetch data via ajax in the background.
             //$rootpath = $CFG->wwwroot;
-            
-            //todolig: nur anzeigen, wenn nicht im configmodus
-            //// Check to see if we are in editing mode
-            //$canmanage = $PAGE->user_is_editing($this->instance->id);
-            
-            $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
+
+            $configModeIsActive = $PAGE->user_is_editing($this->instance->id);
+            //don't show feedback options if we are in config/editing mode
+            //advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
+            //disadvantage: we see no difference in config mode when switching from invisible to visible
+            if(!$configModeIsActive) {
+
+                $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
+            }
             //$allowHTML = get_config('activityfeedback', 'Allow_HTML');
         }
 

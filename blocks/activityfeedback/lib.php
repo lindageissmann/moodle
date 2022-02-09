@@ -35,8 +35,9 @@ function block_activityfeedback_pix_url($contextid, $filearea, $itemid, $filenam
  * When developing third party plugins, pluginfile.php looks for a callback function in the appropriate plugin.
  * These functions are stored in lib.php files and are named component_name_pluginfile()
  * $CFG->wwwroot/pluginfile.php -> lib/filelib.php -> if block, then pluginname_pluginfile()
+ *
  * @param stdClass $course the course object
- * @param stdClass $cm_or_bi the course module object or the block instance
+ * @param stdClass $bi block instance, is empty because context is not a block instance, images are saved in system context
  * @param stdClass $context the context
  * @param string $filearea the name of the file area
  * @param array $args extra arguments (itemid, path)
@@ -44,13 +45,14 @@ function block_activityfeedback_pix_url($contextid, $filearea, $itemid, $filenam
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function block_activityfeedback_pluginfile($course, $cm_or_bi, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function block_activityfeedback_pluginfile($course, $bi, $context, $filearea, $args, $forcedownload, array $options=array()) {
     // block würde Sinn machen, ist aber System // todolig: evtl. Kontext von Anfang an anders definieren?! dann auch unten Zugriff prüfbar
     // vermutlich nicht anders möglich, da als admin_settings und das ist ja System-Kontext, nicht Kurs-spezifisch!
-    //// Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-    //if ($context->contextlevel != CONTEXT_MODULE) {
-    //    return false;
-    //}
+
+    // even if it is a block plugin, contextlevel is not block, because images were saved in admin settings with system context
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
+        return false;
+    }
 
     // Make sure the filearea is one of those used by the plugin.
     if ($filearea !== 'activityfeedback_pix_admin') {
@@ -79,104 +81,11 @@ function block_activityfeedback_pluginfile($course, $cm_or_bi, $context, $filear
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'block_activityfeedback', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
-        return false; // The file does not exist.
+        return false; // The file does not exist. // send_file_not_found();
     }
 
-    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
+    // send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     send_stored_file($file, 86400, 0, $forcedownload, $options);
     
     //todolig: evtl. $forcedownload=true?
 }
-
-///**
-// * @param stdClass $course Course object
-// * @param stdClass $bi Block instance record
-// * @param context_course|context_system $context Context object
-// * @param string $filearea File area
-// * @param array $args Extra arguments
-// * @param bool $forcedownload Whether or not force download
-// * @param array $options Additional options affecting the file serving
-// *
-// * @return bool
-// *
-// * @throws moodle_exception
-// */
-//function block_activityfeedback_XXpluginfileXX($course, $bi, $context, $filearea, $args, $forcedownload, array $options = array()) {
-//    global $CFG, $USER;
-//
-//    $fs = get_file_storage();
-//    $filename = array_pop($args);
-//
-//    if ($filearea === 'activityfeedback_pix_admin') {
-//        $file = $fs->get_file(
-//                $context->id,
-//                'block_activityfeedback',
-//                $filearea,
-//                $args[0], // itemid
-//                '/',
-//                $filename . '.png'
-//        );
-//        if (!$file || $file->is_directory()) {
-//            send_file_not_found();
-//        }
-//    } else {
-//        send_file_not_found();
-//    }
-//
-//    manager::write_close();
-//    send_stored_file($file, null, 0, true, $options);
-//
-//    return true;
-//}
-
-//function block_activityfeedback_images() {
-//    return array(html_writer::tag('img', '', array('alt' => get_string('red', 'block_activityfeedback'), 'src' => "pix/1.png")),
-//            html_writer::tag('img', '', array('alt' => get_string('blue', 'block_activityfeedback'), 'src' => "pix/2.png")),
-//            html_writer::tag('img', '', array('alt' => get_string('green', 'block_activityfeedback'), 'src' => "pix/3.png")));
-//}
-
-//// To avoid any code duplication and make it easy to reuse this functionality create a function in lib.php
-//// to handle the page display. A preloaded activityfeedback page is passed in as a single parameter,
-//// and an optional parameter will control whether the data is returned or directly printed out. 
-//// false = printed out
-//function block_activityfeedback_print_page($activityfeedback, $return = false) {
-//    // To display the page title use the $OUTPUT class
-//    global $OUTPUT, $COURSE;
-//    $display = $OUTPUT->heading($activityfeedback->pagetitle);
-//
-//    // After we have displayed the title, let's add a box to put around the rest of
-//    // the elements that we will display. 
-//    $display .= $OUTPUT->box_start();
-//
-//    if($activityfeedback->displaydate) {
-//        // put a div tag around the date, and give it a class to target with CSS later
-//        $display .= html_writer::start_tag('div', array('class' => 'activityfeedback displaydate'));
-//        $display .= userdate($activityfeedback->displaydate);
-//        $display .= html_writer::end_tag('div');
-//    }
-//
-//    // display text
-//    $display .= clean_text($activityfeedback->displaytext);
-//
-//    //close the box
-//    $display .= $OUTPUT->box_end();
-//
-//    // display the picture
-//    if ($activityfeedback->displaypicture) {
-//        $display .= $OUTPUT->box_start();
-//        $images = block_activityfeedback_images();
-//        $display .= $images[$activityfeedback->picture];
-//        $display .= html_writer::start_tag('p');
-//        $display .= clean_text($activityfeedback->description);
-//        $display .= html_writer::end_tag('p');
-//        $display .= $OUTPUT->box_end();
-//    }
-//
-//    if($return) {
-//        return $display;
-//    } else {
-//        echo $display;
-//    }
-//
-//    
-//}

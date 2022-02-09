@@ -36,7 +36,7 @@ class get_pix_data extends external_api {
      * @return string welcome message
      */
     public static function execute() {
-        global $DB, $USER, $CONTEXT;
+        global $DB, $USER, $CONTEXT, $CFG;
         
         $contextid = $CONTEXT->id;//todolig unklar
 
@@ -62,22 +62,27 @@ class get_pix_data extends external_api {
                 $optname = get_config('block_activityfeedback', 'opt'.$num.'nameadmin');
                 $optarray['name'] = $optname;
                 $file = get_config('block_activityfeedback', 'opt'.$num.'pictureadmin');
-                if ($fs->file_exists(1, 'block_activityfeedback', 'activityfeedback_pix_admin', $num, '/', $file)) {
+                // if an image is defined in admin setting
+                if (strpos($file, '.png') !== false // check is needed because file_exists() returns true for empty string but is not found really
+                        && $fs->file_exists(1, 'block_activityfeedback', 'activityfeedback_pix_admin', $num, '/', $file)) {
                     $pixurl = block_activityfeedback_pix_url(1, 'activityfeedback_pix_admin', $num, $file);
-                    $optarray['url'] = $pixurl;
                     // dann auch lib.php benutzt
                     
                     ////todolig, unklar
                     ////You normally use an API function to generate these URL automatically, most often the file_rewrite_pluginfile_urls function. 
                     //$bla2 = file_rewrite_pluginfile_urls($pixurl, 'pluginfile.php',
                     //        1, 'block_activityfeedback', 'activityfeedback_pix_admin', 0);
-
-                    
-                    // add array with information about the options to the array with all options
-                    $pixdata[] = $optarray;
-                    // nur dazufügen falls URL vorhanden
-                    // todolig: evtl. sonst default aus filesystem
                 }
+                // otherwise use the default image from the local path
+                else {
+                    $rootpath = $CFG->wwwroot;
+                    $pixurl = $rootpath . "/blocks/activityfeedback/pix/option" . $num . ".png";
+                }
+                $optarray['url'] = $pixurl;
+                // add array with information about the options to the array with all options
+                $pixdata[] = $optarray;
+                // nur dazufügen falls URL vorhanden
+                // todolig: evtl. sonst default aus filesystem
                 
             }
         }

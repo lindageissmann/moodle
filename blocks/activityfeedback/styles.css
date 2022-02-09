@@ -14,10 +14,15 @@
 }
 img.block_activityfeedback_btn_main {
     cursor: pointer;
-    max-width: 40px;
+    max-width: 50px;
     /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
     height: auto;
-    /*transform:rotate(360deg);*/
+    border-radius: 50%;/*rounded image*/
+    box-shadow: -2px 2px 5px #7d0a52;
+    /*evtl. hover: transform: scale(1.1);*/
+}
+img.block_activityfeedback_btn_main:hover {
+    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
 }
 .block_activityfeedback_btn { 
     /*cursor: pointer;*/
@@ -47,7 +52,7 @@ img.block_activityfeedback_not_selected {
     opacity: 0;
     visibility: hidden;
     position: absolute;
-    right: calc(0.5rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
+    right: calc(0.8rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
     top: -1.5rem;/*etwa gleich hoch wie imgMain*/
     /*transform: translate(0, 10px);*/
     background-color: #502479; /*Corporate Violett statt grau b3b2b2;*/
@@ -62,10 +67,8 @@ img.block_activityfeedback_not_selected {
     position: absolute;
     z-index: -1; /*hinter allem*/
     content: "";
-    /*right: calc(50% - 10px);
-    top: 22px;*/
     right: -0.6rem;
-    top: calc(50% - 20%);
+    top: calc(50% - 16%);
     border-style: solid;
     border-width: 10px 0px 10px 10px;/*Dreieck nach rechts zeigend, rechts angemacht*/
     border-color: transparent transparent transparent #502479;/*Dreieck, links flach*/
