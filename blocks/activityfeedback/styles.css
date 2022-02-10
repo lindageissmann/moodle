@@ -12,7 +12,7 @@
     top: 0%;
     /*z-index: 1;*/
 }
-img.block_activityfeedback_btn_main {
+img.block_activityfeedback_img_main {
     cursor: pointer;
     max-width: 50px;
     /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
@@ -21,10 +21,10 @@ img.block_activityfeedback_btn_main {
     box-shadow: -2px 2px 5px #7d0a52;
     /*evtl. hover: transform: scale(1.1);*/
 }
-img.block_activityfeedback_btn_main:hover {
-    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
-}
-.block_activityfeedback_btn { 
+/*img.block_activityfeedback_img_main:hover {
+    /*transform: scale(1.1);*//*todolig: wird blurry, auch mit max-width od. scale down*/
+/*}*/
+.block_activityfeedback_img {
     /*cursor: pointer;*/
     max-width: 80px;
     height: auto;
@@ -34,19 +34,20 @@ img.block_activityfeedback_btn_main:hover {
     display: inline-block;/*inline-table auch mögl.*/
     margin: 0.5rem;
     color: white;
+    text-align: center;
     /*width: max-content nicht nötig, schadet nicht*/
 }
-img.block_activityfeedback_selected {
+.block_activityfeedback_figopt:hover {
+    font-weight: 700;
+}
+/*selected: filter: grayscale(100%) / font-weight: 700;*/
+.block_activityfeedback_selected {
     /*border: 5px solid red;*/
     /*evtl. Text umrahmen/fett o.ä. bild schwierig weil vermutl. rund*/
+    font-weight: 700;
 }
-img.block_activityfeedback_not_selected {
+.block_activityfeedback_not_selected {
     filter: grayscale(100%);
-}
-.popover_wrapper {
-    /*position: relative;*/;
-    /*margin-top: 1.5rem;*/
-    /*display: inline-block;*/
 }
 .popover_content {
     opacity: 0;
@@ -78,14 +79,6 @@ img.block_activityfeedback_not_selected {
     https://stackoverflow.com/questions/23420617/emulate-the-bootstrap-side-popover-without-javascript
      */
 }
-/*was mit content (descendant von wrapper) passiert bei hover*/
-/*.popover_wrapper:hover .popover_content {*/
-/*    z-index: 10; !*vor allem*!*/
-/*    opacity: 1;*/
-/*    visibility: visible;*/
-/*    !*transform: translate(0, -20px);*/
-/*    transition: all 0.5s cubic-bezier(0.75, -0.02, 0.2, 0.97);*!*/
-/*}*/
 .popover_content.popover_visible {
     z-index: 100; /*vor restl. Elems angeordnet*/
     opacity: 1;
