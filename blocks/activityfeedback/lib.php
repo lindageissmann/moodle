@@ -6,6 +6,7 @@ defined('MOODLE_INTERNAL') || die;
 // https://docs.moodle.org/dev/File_AP
 // https://docs.moodle.org/dev/File_API_internals
 // (https://docs.moodle.org/dev/Using_the_File_API_in_Moodle_forms)
+// https://docs.moodle.org/dev/Callbacks
 
 function block_activityfeedback_pix_url($contextid, $filearea, $itemid, $filename): string {
     $filename = str_replace('/','',$filename);

@@ -1,115 +1,85 @@
 <?php
 /**
- * Class block_activityfeedback
+ * This is the main file for the custom block "activityfeedback".
+ * Needed to add and load the block.
  *
- * @package   block_activityfeedback
- * @copyright Fernfachhochschule Schweiz, 2022
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * 
- * todolig
- * install.xml im verzeichni u. im db
- * 
- * //für debuggen:
-    //    //print_object() is a useful moodle function which prints out data from mixed data types showing
-    //    // the keys and data for arrays and objects.
-    //    //print_object($fromform);
- * 
- * $CFG: configuration
- * 
- * habe ich getestet:
- * // init, get_content, specialization is not executed if block is manually set to hidden in a course
- * 
- * auf site home nicht automatisch erscheinen
- * auf dashboard nicht aktivierbar
- * wie "Acitivites" -> activity_modules
-*/
-//https://docs.moodle.org/dev/Roles_and_modules#Context
-
-//todolig: am Ende Stil automatisch prüfen:
-//https://docs.moodle.org/dev/Coding_style
+ * See tutorials:
+ * https://docs.moodle.org/dev/Blocks
+ * https://docs.moodle.org/dev/Blocks_Advanced
+ * Functions init(), get_content(), specialization() are not executed if block is manually set to hidden in a course.
+ */
 
 require_once($CFG->dirroot . '/blocks/activityfeedback/lib.php');
 
+/**
+ * Class block_activityfeedback
+ */
 class block_activityfeedback extends block_base {
-    
+
+    /**
+     * Give values to any class member variables.
+     * Is essential for all blocks. Title must be set even if you want to display no title.
+     * Does not affect the behavior, that the block is hidden if it has no content.
+     * @throws coding_exception
+     */
     public function init() {
         $this->title = get_string('pluginname', 'block_activityfeedback');
     }
-    // The PHP tag and the curly bracket for the class definition 
-    // will only be closed after there is another function added in the next section.
+
+    /**
+     * Get the data to display the block (our feedback options).
+     * @return stdClass|stdObject|null
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function get_content() {
         global $CFG, $COURSE, $PAGE;
         //default, time-saver because it's called several times, content should only be set once
+        //in our particular case, we normally have no content unless we are in editing mode
+        //but we make a pseudo content "new stdClass" to distinguish if we already have executed js_call_amd
         if ($this->content !== null) {
             return $this->content;
         }
 
-        //do not display block, no content
-        //$this->content = new stdClass;
-        //$this->content->text = 'The content of our activityfeedback block!';
-        //$this->content->footer = 'Footer here...';
+        //necessary because normally we have no content, but we need a content
+        //otherwise this part would be executed multiple times when reloading the page
+        $this->content = new stdClass;
 
-        //$args = array(
-        //        'rootpath' => $CFG->wwwroot,
-        //        'courseid' => $COURSE->id
-        //);
-        //
-        //$configModeIsActive = $PAGE->user_is_editing($this->instance->id);
-        ////don't show feedback options if we are in config/editing mode
-        ////advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
-        ////disadvantage: we see no difference in config mode when switching from invisible to visible
-        //if(!$configModeIsActive) {
-        //    $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
-        //}
+        //only set content of the block if we are in editing mode
+        //(https://docs.moodle.org/dev/Blocks_Advanced#Add_editing_capability)
+        $inconfigmode = $PAGE->user_is_editing($this->instance->id);
+        if($inconfigmode) {
+            $this->content->text = get_string('contenttext', 'block_activityfeedback');
+        }
+        //otherwise the block content is empty and therefore automatically not displayed
 
-        // siehe auch: https://docs.moodle.org/dev/Blocks#Lists
-        // falls Liste anzeigen statt Text und Footer
-		//function returns the content object
-        return $this->content;
-    }
-    
-    // übernimmt Config (aus edit_form)
-    //It's guaranteed to be automatically called by Moodle as soon as our instance configuration is loaded
-    //and available (that is, immediately after init() is called)
-    //Providing a specialization() method is the natural choice for any configuration data that needs to be
-    //acted upon or made available "as soon as possible".
-    public function specialization() {
-        global $DB, $COURSE, $PAGE, $OUTPUT, $CFG, $USER;
-        if (isset($this->config)) {
-            //if (empty($this->config->title)) {
-            //    $this->title = get_string('defaulttitle', 'block_activityfeedback');
-            //} else {
-            //    $this->title = $this->config->title;
-            //}
-    
-            //if (empty($this->config->text)) {
-            //    $this->config->text = get_string('defaulttext', 'block_activityfeedback');
-            //} else {
-            //    $this->content->text = $this->config->text;
-            //}
-            //
-            //if (!empty($this->config->optionactive)) {
-            //    $this->content->text .= $this->config->optionactive;
-            //}
+        //check if at least one feedback option is enabled in admin settings
+        for ($num = 1; $num <= 7; $num++) {
+            $configured = get_config('block_activityfeedback', 'opt'.$num.'activeadmin');
+            if ($configured) {
+                break;
+            }
+        }
 
-            //falls ich es oben bei getcontent mache, reagiert bild emoji anders
-            $args = array(
-                    'rootpath' => $CFG->wwwroot,
-                    'courseid' => $COURSE->id
-            );
-
-            $configModeIsActive = $PAGE->user_is_editing($this->instance->id);
+        if($configured) {
             //don't show feedback options if we are in config/editing mode
             //advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
-            //disadvantage: we see no difference in config mode when switching from invisible to visible
-            if(!$configModeIsActive) {
+            //disadvantage: we see no differences in config mode when switching from invisible to visible
+            if (!$inconfigmode) {
+                $args = array(
+                            'rootpath' => $CFG->wwwroot,
+                            'courseid' => $COURSE->id
+                );
+                //call to javascript module.js
                 $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
             }
         }
+
+        return $this->content;
     }
 
     /**
-     * Enables global configurability of the block.
+     * Enables global configurability of the block (admin settings).
      * This line tells Moodle that the block has a settings.php file.
      * @return bool
      */
@@ -121,27 +91,76 @@ class block_activityfeedback extends block_base {
      * It shouldn't be possible to add multiple blocks of this type in a single course.
      * The administrator still has the option of disallowing such behavior.
      * This setting can be set separately for each block from the Administration / Configuration / Blocks page.
+     * https://docs.moodle.org/dev/Blocks#We_Are_Legion
+     * It doesn't seem to work, it's still possible to add multiple instances.
      * @return bool
      */
     public function instance_allow_multiple(): bool {
         return false;
     }
-    
-    // falls Titel nicht angezeigt werden soll
-    // im init() müssen wir unabhängig davon immer! zwingend einen eindeutigen Titel definieren
-    //public function hide_header() {
-    //    return true;
-    //}
 
-    //block is allowed to appear only in any course format
-    //not in dashboard, front page, activity modules, etc.
-    //https://docs.moodle.org/dev/Blocks/Appendix_A#applicable_formats.28.29
-    //https://docs.moodle.org/dev/Blocks#Authorized_Personnel_Only
-    public function applicable_formats() {
+    /**
+     * Block is allowed to appear only in any course format.
+     * Not in dashboard, front page, activity modules, etc.
+     * https://docs.moodle.org/dev/Blocks#Authorized_Personnel_Only
+     * https://docs.moodle.org/dev/Blocks/Appendix_A#applicable_formats.28.29
+     * @return array
+     */
+    public function applicable_formats(): array {
         return array(
                 'all' => false,
                 'course-view' => true
         );
+    }
+
+    /**
+     * Delete related data (all feedbacks of current course) from table if block instance is deleted.
+     * (instead of deleting the block, it's possible to only hide the block)
+     * @return bool
+     */
+    public function instance_delete():bool {
+        global $DB, $COURSE;
+        $table = 'block_activityfeedback';
+        $params = ['courseid' => $COURSE->id];
+
+        try {
+            // DELETE FROM block_activityfeedback
+            // WHERE cmid in (SELECT id from prefix_course_modules WHERE course = 'current course';
+            $DB->delete_records_subquery($table, 'cmid', 'id',
+                    'SELECT id FROM {course_modules} WHERE course = :courseid', $params);
+        }
+        catch (dml_exception $e) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * We have no need to overwrite the function instance_copy() to
+     * copy any block-specific data when copying to a new block instance.
+     */
+
+    /**
+     * Not needed at the moment.
+     * Don't display the title of the block. Title in init() function is mandatory.
+     * @return bool
+     */
+    //public function hide_header(): bool {
+    //    return true;
+    //}
+
+
+    // we could also load our block here, but sooner is better
+    // to reacto to block instance config
+
+    //It's guaranteed to be automatically called by Moodle as soon as our instance configuration is loaded
+    //and available (that is, immediately after init() is called).
+    //Providing a specialization() method is the natural choice for any configuration data that needs to be
+    //acted upon or made available "as soon as possible".
+    //https://docs.moodle.org/dev/Blocks/Appendix_A#specialization.28.29
+    public function specialization() {
+        global $CFG, $COURSE, $PAGE;
     }
 }
 

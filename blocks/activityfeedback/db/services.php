@@ -36,7 +36,7 @@ $functions = array(
                 'description' => 'Update database table block_activityfeedback if feedback option was selected.', // will be displayed in the generated API documentation
                 'type'        => 'write', // database rights of the web service function (read, write)
                 'ajax'        => true, // if service is available to 'internal' ajax calls
-                //'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE) // optional, list of built-in services where the function will be included
+                //'services' => array(xxx) // optional, list of built-in services where the function will be included
                 'capabilities'  => '',  // list of capabilities required by the function (those in a require_capability() call)
         ),
         'block_activityfeedback_get_pix_data' => array(

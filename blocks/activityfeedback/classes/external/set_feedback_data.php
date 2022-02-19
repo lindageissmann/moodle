@@ -64,6 +64,31 @@ class set_feedback_data extends external_api {
         //Note: don't forget to validate the context and check capabilities
         //todolig siehe Bsp: https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
 
+        //https://docs.moodle.org/dev/Security
+        //With very few exceptions, every script should call require_login or re-quire_course_login as near the start as possible.
+
+        //https://docs.moodle.org/dev/NEWMODULE_Adding_capabilities#3._Checking_the_capability_in_your_code
+
+        ////
+        //require_login();
+        //confirm_sesskey();
+        //require_capability('block/point_view:view', $blockcontext);
+        //
+        //
+        //if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+        //    print_error('invalidcourse', 'block_simplehtml', $courseid);
+        //}
+        //require_login($course);
+        //
+        //$context = context_module::instance($cm->id);
+        //require_login($course, true, $cm);
+        //require_capability('mod/feedback:edititems', $context);
+        //
+        ////weaker version
+        //require_course_login();
+
+
+
         try {
             $params = self::validate_parameters(self::execute_parameters(), array(
                             'cmid' => $cmid,
@@ -102,6 +127,7 @@ class set_feedback_data extends external_api {
                     $dataobject->userid = $params['userid'];
                     $dataobject->fbid = $params['fbid'];
                     $dataobject->fbname = $params['fbname'];
+                    $dataobject->timemodified = time();
 
                     $DB->insert_record($table, $dataobject, false); //todolig: u. false für bulk
 
@@ -120,6 +146,7 @@ class set_feedback_data extends external_api {
                     // update feedback rate
                     $target->fbid = $fbid;
                     $target->fbname = $fbname;
+                    $target->timemodified = time();
                     // overwrite the selected row
                     $DB->update_record($table, $target);
                 }
@@ -127,6 +154,7 @@ class set_feedback_data extends external_api {
             } catch (dml_exception $e) {
                 $success = false;
                 // todolig: return 'Exception : ' . $e->getMessage() . '\n'; // error_log o.ä.
+                // getestet mit ohne exist. Tabelle: ohne debuggin, trotzdem wird dml_exception angezeigt, 11.2.22
                 error_log("blablabla".$e->getMessage());
             }
         }

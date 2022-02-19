@@ -1,54 +1,40 @@
 <?php
-// This is where you define what capabilities your plugin will create. Note, if you add new
-// capabilities to this file after your plugin has been installed you will need to increase
-// the version number in your version.php file (discussed later) in order for them to be installed.
+/**
+ * This file is where you define what capabilities your plugin will create.
+ * https://docs.moodle.org/dev/Blocks#db.2Faccess.php
+ * https://docs.moodle.org/dev/NEWMODULE_Adding_capabilities
+ * https://docs.moodle.org/dev/Hardening_new_Roles_system#Basic_risks
+ * https://github.com/moodle/moodle/blob/master/lib/db/access.php
+ * See Site administration / Users / Permissions / Capability overview.
+ * See Site administration / Users / Define roles.
+ *
+ * Update version.php to see changes.
+ */
 
-// defines, who is allowed to create/edit this block
-
-// https://docs.moodle.org/dev/NEWMODULE_Adding_capabilities
-
-// https://github.com/moodle/moodle/blob/master/lib/db/access.php
-// * The system has four possible values for a capability:
-// * CAP_ALLOW, CAP_PREVENT, CAP_PROHIBIT, and inherit (not set).
-
-// offenbar ein assoziatives Array (mit Key und Values, deshalb =>, bestehend aus assoziativen Arrays)
+/**
+ * Defines capabilities array (who is allowed to create/edit this block).
+ *
+ * If block is not used on 'My moodle page' then the myaddinstance capability does not need to be given to any user,
+ * but it must still be defined here otherwise you will get errors on certain pages.
+ * See also function applicable_formats() in block_activityfeedback.
+ * Capabilities should also be added to the language file.
+ * riskbitmask: list of associated risks to help admin to know issues.
+ * captype: read or write.
+ * contextlevel: only used to sort and group capabilities.
+ * archetypes: defines for each role the default permissions.
+ */
 $capabilities = array(
-	//für 'My Moodle Page'?
-	// für Sicherheits: security entitise
-	// siehe für Berechtigungen: Site administration / Users / Permissions / Capability overview
-	// archetypes: Sicherheitsrollen, CAP_ALLOW dass erlaubt für diese Rolle
-    
-    // dashboard site nicht aktivieren (fkt. aber nicht, trotzdem zur Auswahl? evt. zuerst deinstallieren
-    // aber korrekt nicht in DB tab mdl_capabilities)
-    // Dashboard ist unter /moodle/my, wie bei FFHS
-    // Site home habe ich noch nie gesehen, aber ist erreichbar, unter: https://moodle.ffhs.ch/?redirect=0
-    
-    // if not used on 'My moodle page'
-    // then the myaddinstance capability does not need to be given to any user,
-    // but it must still be defined here otherwise you will get errors on certain pages
-    // egal, was ich mache (immer version.php anpass u. upgrade), bleibt möglich auf Dashboard hinzuzufügen
-    // (aber dafür auf Site Home nicht mehr automat. übernommen? aber add block immer noch möglich)
+    //add block on moodle/my not allowed
     'block/activityfeedback:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM, 
-        'archetypes' => array(
-            'user' => CAP_PROHIBIT
-        ),
-        //'archetypes' => array(), //means any
-        //'archetypes' => array(
-        //    'user' => CAP_ALLOW
-        //),
-
-		//Sicherheitseinstellungen von anderen Einstellungen kopieren, hier von my:manageblocks
+        'archetypes' => array(), //nobody by default
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ),
-	
-	'block/activityfeedback:addinstance' => array(
-		//Risiko andere User zu spamen mit unnötigen Meldungen, XSS mit unvalidiertem HTML
-		// Users / Permissions / Define roles
-		// bei Anpassungen version.php anpassen
-        'riskbitmask' => RISK_SPAM | RISK_XSS, //RISK_PERSONAL, RISK_DATALOSS
 
+    //add block is allowed for certain roles
+	'block/activityfeedback:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS, //default for blocks
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
@@ -56,13 +42,9 @@ $capabilities = array(
             'manager' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW
         ),
-
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
-    
-    //configview
-    
-    //CONTEXT_COURSE: für aktivität
+
+    //for viewing the block, the following default is used
+    //moodle/block:view
 );
-//The capabilities added above need descriptions for pages that allow setting of capabilities.
-// These should also be added to the language file.

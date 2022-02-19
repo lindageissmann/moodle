@@ -8,33 +8,43 @@
     /*display: flex;*/
     /*color: red;*/
     position: absolute;
-    left: 80%;
-    top: 0%;
+    /*left: 90%;*/
+    right: 0%; /*ganz rechts*/
+    /*top: 0%;*/
+    /*top: -0.6rem;*//*ca. zentriert zu aktivitätsbezeichnung, bei 0% ist oberer rand gleich, ist aber grösser nach unten*/
     /*z-index: 1;*/
+    display: inline-block; /*ist damit gleich hoch, gleich wie aktivität*/
 }
 img.block_activityfeedback_img_main {
     cursor: pointer;
-    max-width: 50px;
+    max-width: 30px;
     /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
     height: auto;
     border-radius: 50%;/*rounded image*/
-    box-shadow: -2px 2px 5px #7d0a52;
+    box-shadow: -1px 1px 2px 1px #7d0a52;
     /*evtl. hover: transform: scale(1.1);*/
 }
-/*img.block_activityfeedback_img_main:hover {
-    /*transform: scale(1.1);*//*todolig: wird blurry, auch mit max-width od. scale down*/
-/*}*/
+img.block_activityfeedback_img_main:hover {
+    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
+}
 .block_activityfeedback_img {
     /*cursor: pointer;*/
-    max-width: 80px;
+    max-width: 30px;
     height: auto;
+}
+.block_activityfeedback_img {
+    transform: scale(1.1);
 }
 .block_activityfeedback_figopt {
     cursor: pointer;
     display: inline-block;/*inline-table auch mögl.*/
-    margin: 0.5rem;
-    color: white;
+    /*margin: 0.2rem 0 0.2rem 0;*/
+    margin: 0.1rem 0.05rem 0.1rem 0.05rem;/*overwrite standard margin of figure 0 0 1rem*/
+    /*padding: 0.2rem 0 0.2rem 0;*/
+    padding: 0rem;
+    color: black;/*textfarbe*/
     text-align: center;
+    font-size: 0.4rem;
     /*width: max-content nicht nötig, schadet nicht*/
 }
 .block_activityfeedback_figopt:hover {
@@ -54,16 +64,20 @@ img.block_activityfeedback_img_main {
     visibility: hidden;
     position: absolute;
     right: calc(0.8rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
-    top: -1.5rem;/*etwa gleich hoch wie imgMain*/
+    top: -0.8rem;/*etwa gleich hoch wie imgMain*/
     /*transform: translate(0, 10px);*/
-    background-color: #502479; /*Corporate Violett statt grau b3b2b2;*/
+    background-color: #e2e5ec; /*e2e5ec ist dünkler grau wie bei hover in moodle / #502479; /*Corporate Violett statt grau b3b2b2;*/
     /*padding: 1.5rem;*/
-    box-shadow: -5px 5px 10px 0px #7d0a52; /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*/
+    box-shadow: -2px 2px 4px 1px #7d0a52; /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*/
     width: max-content;/*damit inline-block fkt. dass nebeneinander*/
     /*mit max-content auch fkt auch alternativen ohne width*/
     /*display: flex;*/
     border-radius: 8px;
 }
+/*Popover could be made with Bootstrap, Bootstrap 4 needs jQuery
+which is stongly discouraged from being used, idea for CSS comes from:
+https://codepen.io/chocochip/pen/zYxMgRG
+Once Moodle supports Bootstrap 5, this would be easier to use.*/
 .popover_content:before { /*arrow*/
     position: absolute;
     z-index: -1; /*hinter allem*/
@@ -72,7 +86,7 @@ img.block_activityfeedback_img_main {
     top: calc(50% - 16%);
     border-style: solid;
     border-width: 10px 0px 10px 10px;/*Dreieck nach rechts zeigend, rechts angemacht*/
-    border-color: transparent transparent transparent #502479;/*Dreieck, links flach*/
+    border-color: transparent transparent transparent #e2e5ec;/*Dreieck, links flach*/
     /*transition-duration: 0.3s;
     transition-property: transform;*/
     /*evtl. besser verständlich:

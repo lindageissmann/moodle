@@ -44,7 +44,7 @@ $settings->add(new admin_setting_configtext(
         'block_activityfeedback/opt1nameadmin',
         get_string('opt1nameadmin', 'block_activityfeedback'),
         get_string('optnameadmin_desc', 'block_activityfeedback'),
-        get_string('opt1nameadmin', 'block_activityfeedback') // default is like visible name
+        get_string('opt1namedefaultadmin', 'block_activityfeedback') // default is like visible name
 ));
 
 // https://docs.moodle.org/dev/Using_the_File_API_in_Moodle_forms
@@ -81,19 +81,20 @@ $settings->add(new admin_setting_configtext(
 //warum landet man schon wieder im pluginfile.php?
 //siehe auch https://docs.moodle.org/dev/File_API#Read_file
 //ich meine URL stimmt, aber Aufruf dann nicht, Aufruf automatisch von php, wenn src gegeben
-!!// doch itemid sollte in args sein, ich muss extrahieren in lib.php
+// doch itemid sollte in args sein, ich muss extrahieren in lib.php
 //suche nach itemid in https://docs.moodle.org/dev/File_API
 //$args extra arguments (itemid, path)
 $settings->add(new admin_setting_configstoredfile(
-            'block_activityfeedback/opt1pictureadmin',
-            get_string('opt1pictureadmin', 'block_activityfeedback'),
-            get_string('optpictureadmin_desc', 'block_activityfeedback'),
-            'activityfeedback_pix_admin',
-            1, // not needed because other parameters are enough to uniquely identify
-            // the itemid is needed if the file area in question is not already uniquely identified by the contextid + component + filearea.
-            // https://moodle.org/mod/forum/discuss.php?d=233083
-            ['maxfiles' => 1, 'accepted_types' => array('.png')]
+        'block_activityfeedback/opt1pictureadmin',
+        get_string('opt1pictureadmin', 'block_activityfeedback'),
+        get_string('optpictureadmin_desc', 'block_activityfeedback'),
+        'activityfeedback_pix_admin',
+        1,
+        // itemid is needed if the file area in question is not already uniquely identified by the contextid + component + filearea.
+        // https://moodle.org/mod/forum/discuss.php?d=233083
+        ['maxfiles' => 1, 'accepted_types' => array('.png')]
 ));
+//default setting für file (img) nicht möglich / admin_setting_configstoredfile hat kien default param
 
 // doing the same for the other 6 possible feedback options
 // by default the first 4 options are active 
@@ -110,7 +111,7 @@ $settings->add(new admin_setting_configtext(
         'block_activityfeedback/opt2nameadmin',
         get_string('opt2nameadmin', 'block_activityfeedback'),
         get_string('optnameadmin_desc', 'block_activityfeedback'),
-        get_string('opt2nameadmin', 'block_activityfeedback')
+        get_string('opt2namedefaultadmin', 'block_activityfeedback')
 ));
 
 $settings->add(new admin_setting_configstoredfile(
@@ -135,7 +136,7 @@ $settings->add(new admin_setting_configtext(
         'block_activityfeedback/opt3nameadmin',
         get_string('opt3nameadmin', 'block_activityfeedback'),
         get_string('optnameadmin_desc', 'block_activityfeedback'),
-        get_string('opt3nameadmin', 'block_activityfeedback')
+        get_string('opt3namedefaultadmin', 'block_activityfeedback')
 ));
 
 $settings->add(new admin_setting_configstoredfile(
@@ -160,7 +161,7 @@ $settings->add(new admin_setting_configtext(
         'block_activityfeedback/opt4nameadmin',
         get_string('opt4nameadmin', 'block_activityfeedback'),
         get_string('optnameadmin_desc', 'block_activityfeedback'),
-        get_string('opt4nameadmin', 'block_activityfeedback')
+        get_string('opt4namedefaultadmin', 'block_activityfeedback')
 ));
 
 $settings->add(new admin_setting_configstoredfile(
@@ -185,7 +186,7 @@ $settings->add(new admin_setting_configtext(
         'block_activityfeedback/opt5nameadmin',
         get_string('opt5nameadmin', 'block_activityfeedback'),
         get_string('optnameadmin_desc', 'block_activityfeedback'),
-        get_string('opt5nameadmin', 'block_activityfeedback')
+        get_string('opt5nameadmin', 'block_activityfeedback') //default is like visible name
 ));
 
 $settings->add(new admin_setting_configstoredfile(

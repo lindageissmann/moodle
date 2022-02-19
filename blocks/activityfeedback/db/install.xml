@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/activityfeedback/db" VERSION="20220126" COMMENT="XMLDB file for Moodle blocks/activityfeedback"
+<XMLDB PATH="blocks/activityfeedback/db" VERSION="20220213" COMMENT="XMLDB file for Moodle blocks/activityfeedback"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -7,6 +7,7 @@
     <TABLE NAME="block_activityfeedback" COMMENT="feedback of users on activities for block activityfeedback">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timestamp of last update"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="foreign key to id from table course_modules (for course and activity)"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="foreign key to id of table user"/>
         <FIELD NAME="fbid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id for chosen feedback option, references config_plugins because feedback options are configurable"/>
@@ -14,6 +15,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>
