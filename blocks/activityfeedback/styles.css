@@ -21,34 +21,38 @@ img.block_activityfeedback_img_main {
     /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
     height: auto;
     border-radius: 50%;/*rounded image*/
-    box-shadow: -1px 1px 2px 1px #7d0a52;
+    box-shadow: 1px 1px 3px 1px #b3b2b2; /*#7d0a52;*/
     /*evtl. hover: transform: scale(1.1);*/
 }
 img.block_activityfeedback_img_main:hover {
-    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
+    transform: scale(1.2);/*todolig: wird blurry, auch mit max-width od. scale down*/
 }
 .block_activityfeedback_img {
     /*cursor: pointer;*/
-    max-width: 30px;
+    max-width: 40px;
     height: auto;
 }
-.block_activityfeedback_img {
-    transform: scale(1.1);
+.block_activityfeedback_img:hover {
+    /*font-weight: 700;*/
+    /*transform: scale(1.05);*/
+    /*filter: drop-shadow(2px 2px 2px #7d0a52)*/
 }
 .block_activityfeedback_figopt {
     cursor: pointer;
-    display: inline-block;/*inline-table auch mögl.*/
+    display: inline-block;/*inline-table auch ok*/
     /*margin: 0.2rem 0 0.2rem 0;*/
     margin: 0.1rem 0.05rem 0.1rem 0.05rem;/*overwrite standard margin of figure 0 0 1rem*/
     /*padding: 0.2rem 0 0.2rem 0;*/
     padding: 0rem;
     color: black;/*textfarbe*/
     text-align: center;
-    font-size: 0.4rem;
+    font-size: 0.6rem;
     /*width: max-content nicht nötig, schadet nicht*/
 }
 .block_activityfeedback_figopt:hover {
-    font-weight: 700;
+    /*font-weight: 700;*/
+    /*transform: scale(1.05);*/
+    /*filter: drop-shadow(2px 2px 2px #7d0a52)*/
 }
 /*selected: filter: grayscale(100%) / font-weight: 700;*/
 .block_activityfeedback_selected {
@@ -59,6 +63,9 @@ img.block_activityfeedback_img_main:hover {
 .block_activityfeedback_not_selected {
     filter: grayscale(100%);
 }
+.block_activityfeedback_not_selected:hover {
+    filter: grayscale(0%);
+}
 .popover_content {
     opacity: 0;
     visibility: hidden;
@@ -68,7 +75,7 @@ img.block_activityfeedback_img_main:hover {
     /*transform: translate(0, 10px);*/
     background-color: #e2e5ec; /*e2e5ec ist dünkler grau wie bei hover in moodle / #502479; /*Corporate Violett statt grau b3b2b2;*/
     /*padding: 1.5rem;*/
-    box-shadow: -2px 2px 4px 1px #7d0a52; /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*/
+    box-shadow: 2px 2px 3px 1px #b3b2b2; /*#7d0a52;*/ /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*//*#f7f8fc für acitivty in ffhs moodle*/
     width: max-content;/*damit inline-block fkt. dass nebeneinander*/
     /*mit max-content auch fkt auch alternativen ohne width*/
     /*display: flex;*/
@@ -80,7 +87,7 @@ https://codepen.io/chocochip/pen/zYxMgRG
 Once Moodle supports Bootstrap 5, this would be easier to use.*/
 .popover_content:before { /*arrow*/
     position: absolute;
-    z-index: -1; /*hinter allem*/
+    /*z-index: 100;*/ /*-1 hinter allem, nicht 100, bleibt dann vor drop-shadow*/
     content: "";
     right: -0.6rem;
     top: calc(50% - 16%);
@@ -94,7 +101,7 @@ Once Moodle supports Bootstrap 5, this would be easier to use.*/
      */
 }
 .popover_content.popover_visible {
-    z-index: 100; /*vor restl. Elems angeordnet*/
+    /*z-index: 100;*/ /*vor restl. Elems angeordnet*/
     opacity: 1;
     visibility: visible;
 }

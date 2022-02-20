@@ -13,7 +13,7 @@
 defined('MOODLE_INTERNAL') || die(); //default, permit navigating to this file, no external access
 
 $plugin->component = 'block_activityfeedback';  //full name of the plugin (used for diagnostics)
-$plugin->version = 2011062888; //current plugin version (date: YYYYMMDDXX)
+$plugin->version = 2011062898; //current plugin version (date: YYYYMMDDXX)
 $plugin->requires = 2021051700; //requires this Moodle version (this is the release version for Moodle 3.11)
 $plugin->maturity = MATURITY_STABLE; //defines maturity level / how stable it is (plugin is ready for installation)
 $plugin->release = 'v3.11-r1.0'; //plugin release

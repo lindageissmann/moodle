@@ -27,22 +27,23 @@ class block_activityfeedback extends block_base {
     }
 
     /**
-     * Get the data to display the block (our feedback options).
+     * Display the block content.
+     * Is always needed, but we use specialization() to display the feedback options.
      * @return stdClass|stdObject|null
      * @throws coding_exception
      * @throws dml_exception
      */
     public function get_content() {
-        global $CFG, $COURSE, $PAGE;
+        global $PAGE;
         //default, time-saver because it's called several times, content should only be set once
         //in our particular case, we normally have no content unless we are in editing mode
-        //but we make a pseudo content "new stdClass" to distinguish if we already have executed js_call_amd
+        //we create a pseudo content "new stdClass" to distinguish if we have already executed the function
         if ($this->content !== null) {
             return $this->content;
         }
 
-        //necessary because normally we have no content, but we need a content
-        //otherwise this part would be executed multiple times when reloading the page
+        //necessary because normally we have no content,
+        //but here we define an object, otherwise this part would be executed multiple times when reloading the page
         $this->content = new stdClass;
 
         //only set content of the block if we are in editing mode
@@ -53,29 +54,46 @@ class block_activityfeedback extends block_base {
         }
         //otherwise the block content is empty and therefore automatically not displayed
 
+        return $this->content;
+    }
+
+    // to reacto to block instance config (in get_content() works also, but sooner is better)
+
+    /**
+     * Get the data to display our feedback options on every activity.
+     * (function get_content() works also, but sooner is better)
+     * It's guaranteed to be automatically called by Moodle as soon as our instance configuration is loaded and available
+     * (that is, immediately after init() is called). Providing a specialization() method is the natural choice for any
+     * configuration data that needs to be acted upon or made available "as soon as possible".
+     * https://docs.moodle.org/dev/Blocks/Appendix_A#specialization.28.29
+     * https://docs.moodle.org/dev/Blocks#The_Specialists
+     * @throws dml_exception
+     */
+    public function specialization() {
+        global $CFG, $COURSE, $PAGE;
+
         //check if at least one feedback option is enabled in admin settings
         for ($num = 1; $num <= 7; $num++) {
-            $configured = get_config('block_activityfeedback', 'opt'.$num.'activeadmin');
-            if ($configured) {
+            $enabled = get_config('block_activityfeedback', 'opt'.$num.'activeadmin');
+            if ($enabled) {
                 break;
             }
         }
 
-        if($configured) {
+        if($enabled) {
             //don't show feedback options if we are in config/editing mode
             //advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
             //disadvantage: we see no differences in config mode when switching from invisible to visible
+            $inconfigmode = $PAGE->user_is_editing($this->instance->id);
             if (!$inconfigmode) {
                 $args = array(
-                            'rootpath' => $CFG->wwwroot,
-                            'courseid' => $COURSE->id
+                        'rootpath' => $CFG->wwwroot,
+                        'courseid' => $COURSE->id
                 );
-                //call to javascript module.js
+                //call to javascript module.js for displaying the correct feedback options
                 $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
             }
         }
-
-        return $this->content;
     }
 
     /**
@@ -135,7 +153,6 @@ class block_activityfeedback extends block_base {
         return true;
     }
 
-
     /**
      * We have no need to overwrite the function instance_copy() to
      * copy any block-specific data when copying to a new block instance.
@@ -149,18 +166,5 @@ class block_activityfeedback extends block_base {
     //public function hide_header(): bool {
     //    return true;
     //}
-
-
-    // we could also load our block here, but sooner is better
-    // to reacto to block instance config
-
-    //It's guaranteed to be automatically called by Moodle as soon as our instance configuration is loaded
-    //and available (that is, immediately after init() is called).
-    //Providing a specialization() method is the natural choice for any configuration data that needs to be
-    //acted upon or made available "as soon as possible".
-    //https://docs.moodle.org/dev/Blocks/Appendix_A#specialization.28.29
-    public function specialization() {
-        global $CFG, $COURSE, $PAGE;
-    }
 }
 

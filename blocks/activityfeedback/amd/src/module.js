@@ -76,7 +76,6 @@ function displayFeedback(rootPath, courseid) {
         methodname: 'block_activityfeedback_get_pix_data',
         args: {},
         done: function (pixData) {
-            window.console.log("displayPictures: start done");
             const activities = document.getElementsByClassName("activity");
             //add feedback elements for each activity
             for (const activity of activities) {
@@ -191,7 +190,6 @@ function getFeedback(rootPath, courseid) {
                             opt.classList.add("block_activityfeedback_selected");
                         }
                         else { //feedback option was not selected
-                            window.console.log("pix false");
                             opt.classList.remove("block_activityfeedback_selected");
                             opt.classList.add("block_activityfeedback_not_selected");
                         }
@@ -253,7 +251,6 @@ function getFeedbackForActivity(rootPath, cmid) {
                     mainImgUpdated = true;
                 }
             }
-            window.console.log("getFeedbackForActivity end done");
         },
         fail: notification.exception
     }]);
@@ -299,7 +296,6 @@ function setFeedbackOption(btn, rootPath) {
         done: function () {
             //reload feedback for current activity
             getFeedbackForActivity(rootPath, cmid);
-            window.console.log("setFeedbackOption 3");
         },
         fail: notification.exception
     }]);

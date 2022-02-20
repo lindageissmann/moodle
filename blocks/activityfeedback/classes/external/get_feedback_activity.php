@@ -1,11 +1,8 @@
 <?php
 /**
- * PLUGIN external file
- *
- * @package    component
- * @category   external
- * @copyright  20XX YOURSELF
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * External function to get the feedback for a certain activity for the current user
+ * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
+ * https://docs.moodle.org/dev/External_functions_API
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -19,56 +16,49 @@ class get_feedback_activity extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters() {
-        // FUNCTIONNAME_parameters() always return an external_function_parameters(). 
-        // The external_function_parameters constructor expects an array of external_description.
         return new external_function_parameters(
-        // a external_description can be: external_value, external_single_structure or external_multiple structure
-                //array('PARAM1' => new external_value(PARAM_TYPE, 'human description of PARAM1'))
-                array(
-                    'cmid' => new external_value(PARAM_INT, 'id of course_module', VALUE_REQUIRED)
-                )                
+            array(
+                'cmid' => new external_value(PARAM_INT, 'id of course_module', VALUE_REQUIRED)
+            )
         );
     }
 
     /**
-     * The function itself
-     * https://docs.moodle.org/dev/Data_manipulation_API
-     * 
-     * @return string welcome message
+     * The function itself, get feedback from db table 'block_activityfeedback' for given activity and current user
+     * @param $cmid id of certain activity (id from table course_modules)
+     * @return array array of the related feedback with id, cmid, userid, fbid
      */
     public static function execute($cmid) {
         global $DB, $USER;
         
-        //Parameters validation
+        //parameter validation
         $params = self::validate_parameters(self::execute_parameters(),
                     array(
                         'cmid' => $cmid
                     )
-            );
+        );
 
         $userid = $USER->id;
-
-        $table = 'block_activityfeedback';
-        
-        $sql = 'SELECT id,cmid,userid,fbid FROM {block_activityfeedback}
-                   WHERE userid = :userid
-                   AND cmid = :cmid';
-        
         $paramsql = array('userid' => $userid, 'cmid' => $params['cmid']);
 
-        $result = $DB->get_records_sql($sql, $paramsql);
+        $sql = 'SELECT id,cmid,userid,fbid FROM {block_activityfeedback}
+               WHERE userid = :userid
+               AND cmid = :cmid';
 
-        /* Parameters for the Javascript */
-        $pointviews = (!empty($result)) ? array_values($result) : array();
+        $result = array();
 
-        //Note: don't forget to validate the context and check capabilities
+        try {
+            $result = $DB->get_records_sql($sql, $paramsql);
+        } catch (dml_exception $e) {
+            //ignore any sql errors here, the connection might be broken (found this line in core)
+        }
 
         return $result;
     }
 
     /**
      * Returns description of method result value
-     * @return external_description
+     * @return external_multiple_structure
      */
     public static function execute_returns() {
         return new external_multiple_structure(

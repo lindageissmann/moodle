@@ -47,4 +47,7 @@ $capabilities = array(
 
     //for viewing the block, the following default is used
     //moodle/block:view
+    //is normally given to: teacher, non-editing teacher, student, guest, authenticated user
+    //not to: manager, course creator, authenticated user on frontpage
+    //the same capability is used to select a feedback option, we don't create a new capability
 );

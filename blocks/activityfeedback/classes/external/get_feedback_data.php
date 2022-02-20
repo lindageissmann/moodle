@@ -1,11 +1,8 @@
 <?php
 /**
- * PLUGIN external file
- *
- * @package    component
- * @category   external
- * @copyright  20XX YOURSELF
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * External function to get all feedbacks for course and user
+ * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
+ * https://docs.moodle.org/dev/External_functions_API
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -23,62 +20,48 @@ class get_feedback_data extends external_api {
         // The external_function_parameters constructor expects an array of external_description.
         return new external_function_parameters(
         // a external_description can be: external_value, external_single_structure or external_multiple structure
-                //array('PARAM1' => new external_value(PARAM_TYPE, 'human description of PARAM1'))
-                array(
-                        'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_REQUIRED)
-                )                
+            array(
+                'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_REQUIRED)
+            )
         );
     }
 
     /**
-     * The function itself
-     * https://docs.moodle.org/dev/Data_manipulation_API
-     * 
-     * @return string welcome message
+     * The function itself, get feedback from db table 'block_activityfeedback' for current course and user
+     * @param $courseid id of the course
+     * @return array array of existing feedbacks with id, cmid, userid, fbid
      */
     public static function execute($courseid) {
         global $DB, $USER;
         
-        //Parameters validation
+        //parameter validation
         $params = self::validate_parameters(self::execute_parameters(),
                     array(
                         'courseid' => $courseid
                     )
-            );
+        );
 
         $userid = $USER->id;
-
-        $table = 'block_activityfeedback';
-        
-        $sql = 'SELECT id,cmid,userid,fbid FROM {block_activityfeedback}
-                   WHERE userid = :userid
-                   AND cmid in (SELECT id FROM {course_modules} WHERE course = :courseid)';//todolig mit id fkt. nicht mehr, mit module schon
-        
         $paramsql = array('userid' => $userid, 'courseid' => $params['courseid']);
 
-        $result = $DB->get_records_sql($sql, $paramsql);
+        $sql = 'SELECT id,cmid,userid,fbid FROM {block_activityfeedback}
+               WHERE userid = :userid
+               AND cmid in (SELECT id FROM {course_modules} WHERE course = :courseid)';
 
-        /* Parameters for the Javascript */
-        $pointviews = (!empty($result)) ? array_values($result) : array();
-        
-        // vermutlich od noch versuchen, todolig
-        // use recordsets if number of records is high, but returned iterator is not usable on client side
+        $result = array();
 
-        //$target = $DB->get_record(
-        //        $table, 
-        //        array('cmid' => $params['cmid'], 'userid' => $params['userid']),
-        //        'cmid,fbid',
-        //        IGNORE_MULTIPLE
-        //);
-
-        //Note: don't forget to validate the context and check capabilities
+        try {
+            $result = $DB->get_records_sql($sql, $paramsql);
+        } catch (dml_exception $e) {
+            //ignore any sql errors here, the connection might be broken (found this line in core)
+        }
 
         return $result;
     }
 
     /**
      * Returns description of method result value
-     * @return external_description
+     * @return external_multiple_structure
      */
     public static function execute_returns() {
         return new external_multiple_structure(

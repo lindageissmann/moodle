@@ -1,14 +1,20 @@
 <?php
-//https://docs.moodle.org/dev/Web_services_API
-//https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
-//Exposing plugin's functions as Web service functions
-//This file contains one or two arrays. The first array declares your web service functions.
-//Each of these declarations reference a function in your module (usually an external function).
-
-// update version.php to see changes
+/**
+ * Exposing plugin's functions as Web service functions
+ * This file contains one or two arrays. The first array declares your web service functions.
+ * Each of these declarations reference a function in your module (usually an external function).
+ * The second, optional array declares the pre-built services.
+ * https://docs.moodle.org/dev/Web_services_API
+ * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
+ *
+ * Update version.php to see changes.
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Declaration of web service functions
+ */
 $functions = array(
         'block_activityfeedback_get_feedback_data' => array(
                 'classname'   => 'get_feedback_data',
@@ -50,21 +56,24 @@ $functions = array(
         ),
 );
 
-// OPTIONAL
-// During the plugin installation/upgrade, Moodle installs these services as pre-build services. 
-// A pre-build service is not editable by administrator.
+/**
+ * Declaration of the pre-built services.
+ * During the plugin installation/upgrade, Moodle installs these services as pre-build services.
+ * A pre-build service is not editable by administrator.
+ */
 $services = array(
-        'Activity feedback service' => array(      // the name of the web service
+        'Activity feedback service' => array( //name of the web service
                 'functions' => array(
                         'block_activityfeedback_get_feedback_data',
+                        'block_activityfeedback_get_feedback_activity',
                         'block_activityfeedback_set_feedback_data',
                         'block_activityfeedback_get_pix_data'
-                ), // web service functions of this service
-                'requiredcapability' => '',   // if set, the web service user need this capability to access any function of this service. For example: 'some/capability:specified'
-                'restrictedusers' => 0, // if 1, the administrator must manually select which user can use this service. (> Web services > Manage services > Authorised users)
-                'enabled' => 1, // if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
-                'shortname' => 'activityfeedbackservice', // the short name used to refer to this service from elsewhere including when fetching a token, optional – but needed if restrictedusers is set so as to allow logins
-                'downloadfiles' => 0,    // don't allow file downloads
-                'uploadfiles' => 0      // don't allow file uploads
+                ), //web service functions of this service
+                'requiredcapability' => 'moodle/block:view', //if set, the web service user need this capability to access any function of this service
+                'restrictedusers' => 0, //if 1, the administrator must manually select which user can use this service (> Web services > Manage services > Authorised users)
+                'enabled' => 1, //if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
+                'shortname' => 'activityfeedbackservice', //the short name used to refer to this service from elsewhere including when fetching a token, optional – but needed if restrictedusers is set so as to allow logins
+                'downloadfiles' => 0, //don't allow file downloads
+                'uploadfiles' => 0 //don't allow file uploads
         )
 );
