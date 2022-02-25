@@ -8,12 +8,13 @@
  * @copyright Fernfachhochschule Schweiz, 2022
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 $string['pluginname'] = 'Activity feedback';
-//$string['activityfeedback'] = 'Activity Feedback';
 $string['activityfeedback:addinstance'] = 'Add a new Activity Feedback block'; // for capability
-$string['activityfeedback:myaddinstance'] = 'Add a new Activity Feedback block to the My Moodle Page'; // for capability
+$string['activityfeedback:myaddinstance'] = 'Add a new Activity Feedback block to Dashboard'; // for capability
 $string['contenttext'] = 'This block is no longer visible if editing is turned off. Instead you can see then the feedback options for each activity.';
-// texts for admin settings
+// for admin settings
 $string['optactiveadmin_desc'] = 'if option is active and visible';
 $string['optnameadmin_desc'] = 'label to display for this option';
 $string['optpictureadmin_desc'] = 'image to display for this option';
@@ -38,7 +39,7 @@ $string['opt6pictureadmin'] = 'picture (option 6)';
 $string['opt7activeadmin'] = 'active (option 7)';
 $string['opt7nameadmin'] = 'name (option 7)';
 $string['opt7pictureadmin'] = 'picture (option 7)';
-// texts for default options
+// for default feedback options (in settings)
 $string['opt1namedefaultadmin'] = 'excited';
 $string['opt2namedefaultadmin'] = 'bored';
 $string['opt3namedefaultadmin'] = 'confused';

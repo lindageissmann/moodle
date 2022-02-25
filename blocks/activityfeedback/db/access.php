@@ -33,7 +33,7 @@ $capabilities = array(
     'block/activityfeedback:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(), // nobody by default
+        'archetypes' => array(), // nobody by default ('user' => CAP_PROHIBIT makes no difference)
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ),
 

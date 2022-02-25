@@ -4,14 +4,14 @@ Das Block-Plugin **Activity Feedback** ermöglicht es den Studierenden,
 Feedback zu einzelnen Aktivitäten abzugeben.
 Die Standardkonfiguration stellt dafür vier verschiedene Emojis zur Auswahl bereit.
 
-## Installation und Konfiguration
-### Installation
+## Installation
 Das Block-Plugin kann wie andere Block-Plugins installiert werden.
 Dazu muss das gesamte Verzeichnis **activityfeedback** auf dem Server, wo Moodle läuft 
 im Moodle-Verzeichnis (meist **moodle** genannt) im Verzeichnis der Block-Plugins (**blocks**) 
 gespeichert werden. Sobald man anschliessend Moodle im Browser öffnet und sich danach als Administrator anmeldet, 
 wird automatisch angezeigt, dass das Plugin installiert werden kann.
 
+## Konfiguration
 ### Standardkonfiguration
 Die Standardkonfiguration wird automatisch gezogen, wenn das Plugin neu installiert 
 wird und man an den angezeigten Einstellungen keine Anpassung vornimmt.
@@ -29,7 +29,7 @@ Standardmässig sind 4 eingeschaltet. Jede der sieben Optionen kann aktiviert od
 Es kann ein Bild augewählt werden (falls bei den ersten 4 Optionen keines angegeben wird, werden die
 Standardbilder genommen) und im zugehörigen Textfeld kann der zum Bild anzuzeigende Text definiert werden.
 
-### Aktivieren auf einem Kurs
+### Aktivierung auf einem Kurs
 Benutzende mit der Berechtigung, einen Kurs zu konfigurieren, können über **Add block** das Plugin auf dem Kurs aktiveren.
 Damit werden die Feedback-Optionen automatisch auf jeder Aktivität der Kurses angezeigt.
 Im Gegensatz zu den meisten anderen Blöcken, wird der Block selbst ausgeblendet sobald der Editiermodus beendet wird.
