@@ -3,22 +3,20 @@
  * Language file which defines the strings for displaying.
  * The english subdirectory is mandatory.
  * Update version.php to see changes.
+ *
+ * @package   block_activityfeedback
+ * @copyright Fernfachhochschule Schweiz, 2022
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['pluginname'] = 'Activity feedback';//ok
-$string['activityfeedback'] = 'Activity Feedback';
-$string['activityfeedback:addinstance'] = 'Add a new Activity Feedback block'; //for capability
-$string['activityfeedback:myaddinstance'] = 'Add a new Activity Feedback block to the My Moodle page'; //for capability
-$string['contenttext'] = 'This block is no longer visible if editing is turned off. Instead you can see then the feedback options for each activity.';//ok
-$string['blockstring'] = 'Label: String for the block Simple HTML';
-$string['blocktitle'] = 'Label: Title for the block Simple HTML';
-$string['defaulttitle'] = 'Feedback für Aktivitäten';
-$string['defaulttext'] = 'Text fürs Aktivitätenfeedback';
-$string['displayedhtml'] = 'displayedhtml';
-/*$string['blocksettings'] = 'Block Settings';*/
-//$string['optionactive'] = 'active';
+$string['pluginname'] = 'Activity feedback';
+//$string['activityfeedback'] = 'Activity Feedback';
+$string['activityfeedback:addinstance'] = 'Add a new Activity Feedback block'; // for capability
+$string['activityfeedback:myaddinstance'] = 'Add a new Activity Feedback block to the My Moodle Page'; // for capability
+$string['contenttext'] = 'This block is no longer visible if editing is turned off. Instead you can see then the feedback options for each activity.';
+// texts for admin settings
 $string['optactiveadmin_desc'] = 'if option is active and visible';
-$string['optnameadmin_desc'] = 'label which is displayed for this option';
-$string['optpictureadmin_desc'] = 'image which is displayed for this option';
+$string['optnameadmin_desc'] = 'label to display for this option';
+$string['optpictureadmin_desc'] = 'image to display for this option';
 $string['opt1activeadmin'] = 'active (option 1)';
 $string['opt1nameadmin'] = 'name (option 1)';
 $string['opt1pictureadmin'] = 'picture (option 1)';
@@ -40,7 +38,7 @@ $string['opt6pictureadmin'] = 'picture (option 6)';
 $string['opt7activeadmin'] = 'active (option 7)';
 $string['opt7nameadmin'] = 'name (option 7)';
 $string['opt7pictureadmin'] = 'picture (option 7)';
-//ok:
+// texts for default options
 $string['opt1namedefaultadmin'] = 'excited';
 $string['opt2namedefaultadmin'] = 'bored';
 $string['opt3namedefaultadmin'] = 'confused';

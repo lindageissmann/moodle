@@ -9,7 +9,7 @@
     /*color: red;*/
     position: absolute;
     /*left: 90%;*/
-    right: 0%; /*ganz rechts*/
+    right: 1%; /*fast ganz rechts*/
     /*top: 0%;*/
     /*top: -0.6rem;*//*ca. zentriert zu aktivitätsbezeichnung, bei 0% ist oberer rand gleich, ist aber grösser nach unten*/
     /*z-index: 1;*/
@@ -25,23 +25,21 @@ img.block_activityfeedback_img_main {
     /*evtl. hover: transform: scale(1.1);*/
 }
 img.block_activityfeedback_img_main:hover {
-    transform: scale(1.2);/*todolig: wird blurry, auch mit max-width od. scale down*/
+    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
 }
 .block_activityfeedback_img {
     /*cursor: pointer;*/
     max-width: 40px;
     height: auto;
 }
-.block_activityfeedback_img:hover {
-    /*font-weight: 700;*/
-    /*transform: scale(1.05);*/
-    /*filter: drop-shadow(2px 2px 2px #7d0a52)*/
-}
+/*.block_activityfeedback_img:hover {*/
+/*    filter: drop-shadow(2px 2px 2px #7d0a52)*/
+/*}*/
 .block_activityfeedback_figopt {
     cursor: pointer;
     display: inline-block;/*inline-table auch ok*/
     /*margin: 0.2rem 0 0.2rem 0;*/
-    margin: 0.1rem 0.05rem 0.1rem 0.05rem;/*overwrite standard margin of figure 0 0 1rem*/
+    margin: 0.1rem 0.1rem 0.1rem 0.1rem;/*overwrite standard margin of figure 0 0 1rem*/
     /*padding: 0.2rem 0 0.2rem 0;*/
     padding: 0rem;
     color: black;/*textfarbe*/
@@ -51,7 +49,7 @@ img.block_activityfeedback_img_main:hover {
 }
 .block_activityfeedback_figopt:hover {
     /*font-weight: 700;*/
-    /*transform: scale(1.05);*/
+    transform: scale(1.05);
     /*filter: drop-shadow(2px 2px 2px #7d0a52)*/
 }
 /*selected: filter: grayscale(100%) / font-weight: 700;*/
@@ -59,19 +57,20 @@ img.block_activityfeedback_img_main:hover {
     /*border: 5px solid red;*/
     /*evtl. Text umrahmen/fett o.ä. bild schwierig weil vermutl. rund*/
     font-weight: 700;
+    filter: none;
 }
 .block_activityfeedback_not_selected {
     filter: grayscale(100%);
 }
 .block_activityfeedback_not_selected:hover {
-    filter: grayscale(0%);
+    filter: none;
 }
 .popover_content {
     opacity: 0;
     visibility: hidden;
     position: absolute;
     right: calc(0.8rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
-    top: -0.8rem;/*etwa gleich hoch wie imgMain*/
+    top: -0.9rem;/*etwa gleich hoch wie imgMain*/
     /*transform: translate(0, 10px);*/
     background-color: #e2e5ec; /*e2e5ec ist dünkler grau wie bei hover in moodle / #502479; /*Corporate Violett statt grau b3b2b2;*/
     /*padding: 1.5rem;*/

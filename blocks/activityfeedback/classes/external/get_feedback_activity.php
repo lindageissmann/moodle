@@ -1,14 +1,13 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . "/externallib.php");
+
 /**
  * External function to get the feedback for a certain activity for the current user
  * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
  * https://docs.moodle.org/dev/External_functions_API
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . "/externallib.php");
-
 class get_feedback_activity extends external_api {
 
     /**
@@ -30,8 +29,8 @@ class get_feedback_activity extends external_api {
      */
     public static function execute($cmid) {
         global $DB, $USER;
-        
-        //parameter validation
+
+        // parameter validation
         $params = self::validate_parameters(self::execute_parameters(),
                     array(
                         'cmid' => $cmid
@@ -50,7 +49,7 @@ class get_feedback_activity extends external_api {
         try {
             $result = $DB->get_records_sql($sql, $paramsql);
         } catch (dml_exception $e) {
-            //ignore any sql errors here, the connection might be broken (found this line in core)
+            // ignore any sql errors here, the connection might be broken (found this line in core)
         }
 
         return $result;

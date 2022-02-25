@@ -10,6 +10,10 @@
  * Your config data will still be available via a get_config() call, and name collision will be impossible between plugins.
  *
  * Update version.php to see changes.
+ *
+ * @package   block_activityfeedback
+ * @copyright Fernfachhochschule Schweiz, 2022
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -21,19 +25,19 @@ defined('MOODLE_INTERNAL') || die();
  * - a textfield for a description of the feedback option
  * - an upload field for the images (if not filled, the default images are taken for option 1 - 4 (saved in plugin directory))
  */
-if ($hassiteconfig) { //as a quick way to check for the moodle/site:config permission
-    if ($ADMIN->fulltree) { //improves performance when the caller does not need the actual settings
+if ($hassiteconfig) { // as a quick way to check for the moodle/site:config permission
+    if ($ADMIN->fulltree) { // improves performance when the caller does not need the actual settings
 
         // option 1 (default active)
         $settings->add(new admin_setting_configcheckbox(
-                //stored in config_plugins table
+                // stored in config_plugins table
                 'block_activityfeedback/opt1activeadmin',
-                //label, is put in front of setting on the admin screen
-                //4th param is for better performance, see https://docs.moodle.org/dev/String_API#lang_string_class
+                // label, is put in front of setting on the admin screen
+                // 4th param is for better performance, see https://docs.moodle.org/dev/String_API#lang_string_class
                 get_string('opt1activeadmin', 'block_activityfeedback', null, true),
-                //description, short bit of text displayed underneath the setting to explain it further
-                get_string('opt1activeadmin_desc', 'block_activityfeedback', null, true),
-                //default value for this setting
+                // description, short bit of text displayed underneath the setting to explain it further
+                get_string('optactiveadmin_desc', 'block_activityfeedback', null, true),
+                // default value for this setting
                 '1'
         ));
 
@@ -41,7 +45,7 @@ if ($hassiteconfig) { //as a quick way to check for the moodle/site:config permi
                 'block_activityfeedback/opt1nameadmin',
                 get_string('opt1nameadmin', 'block_activityfeedback', null, true),
                 get_string('optnameadmin_desc', 'block_activityfeedback', null, true),
-                //default is like visible name
+                // default is like visible name
                 get_string('opt1namedefaultadmin', 'block_activityfeedback', null, true)
         ));
 
@@ -56,10 +60,10 @@ if ($hassiteconfig) { //as a quick way to check for the moodle/site:config permi
                 get_string('optpictureadmin_desc', 'block_activityfeedback', null, true),
                 'activityfeedback_pix_admin',
                 1,
-                //itemid is needed if the file area in question is not already uniquely identified
-                //by the contextid + component + filearea (https://moodle.org/mod/forum/discuss.php?d=233083#p1012585)
+                // itemid is needed if the file area in question is not already uniquely identified
+                // by the contextid + component + filearea (https://moodle.org/mod/forum/discuss.php?d=233083#p1012585)
                 ['maxfiles' => 1, 'accepted_types' => array('.png')]
-                //default image is not supported, admin_setting_configstoredfile has no 'default' parameter
+                // default image is not supported, admin_setting_configstoredfile has no 'default' parameter
         ));
 
         // doing the same for the other 6 possible feedback options

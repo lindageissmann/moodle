@@ -1,15 +1,14 @@
 <?php
-/**
- * External function to get data feedback options / images
- * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
- * https://docs.moodle.org/dev/External_functions_API
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . '/blocks/activityfeedback/lib.php');
 
+/**
+ * External function to get data feedback options / images
+ * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
+ * https://docs.moodle.org/dev/External_functions_API
+ */
 class get_pix_data extends external_api {
 
     /**
@@ -39,20 +38,18 @@ class get_pix_data extends external_api {
             $optactive = get_config('block_activityfeedback', 'opt'.$num.'activeadmin');
 
             if ($optactive) {
-                //array with data about a feedback option, read from admin settings
-                $optarray = array(); //option is added if it's active, contains: key (number 1-7), name, url of picture
+                // array with data about a feedback option, read from admin settings
+                $optarray = array(); // option is added if it's active, contains: key (number 1-7), name, url of picture
                 $optarray['key'] = $num;
                 $optarray['name'] = get_config('block_activityfeedback', 'opt'.$num.'nameadmin');
 
-                //url
+                // url
                 $file = get_config('block_activityfeedback', 'opt'.$num.'pictureadmin');
-                //if an image is defined in admin setting
-                if (strpos($file, '.png') !== false //because sometimes file_exists() returns true even for empty string (because of cache)
+                // if an image is defined in admin setting
+                if (strpos($file, '.png') !== false // because sometimes file_exists() returns true even for empty string (because of cache)
                         && $fs->file_exists(1, 'block_activityfeedback', 'activityfeedback_pix_admin', $num, '/', $file)) {
                     $pixurl = block_activityfeedback_pix_url(1, 'activityfeedback_pix_admin', $num, $file);
-                }
-                //otherwise use the default image from the local path (only for the first 4 options)
-                else if ($num < 5) {
+                } else if ($num < 5) { // otherwise use the default image from the local path (only for the first 4 options)
                     $rootpath = $CFG->wwwroot;
                     $pixurl = $rootpath . "/blocks/activityfeedback/pix/option" . $num . ".png";
                 }

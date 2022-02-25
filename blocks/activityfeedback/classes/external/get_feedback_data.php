@@ -1,14 +1,13 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . "/externallib.php");
+
 /**
  * External function to get all feedbacks for course and user
  * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
  * https://docs.moodle.org/dev/External_functions_API
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . "/externallib.php");
-
 class get_feedback_data extends external_api {
 
     /**
@@ -16,10 +15,10 @@ class get_feedback_data extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters() {
-        // FUNCTIONNAME_parameters() always return an external_function_parameters(). 
-        // The external_function_parameters constructor expects an array of external_description.
+        // FUNCTIONNAME_parameters() always return an external_function_parameters()
+        // external_function_parameters constructor expects an array of external_description
         return new external_function_parameters(
-        // a external_description can be: external_value, external_single_structure or external_multiple structure
+        // an external_description can be: external_value, external_single_structure or external_multiple structure
             array(
                 'courseid' => new external_value(PARAM_INT, 'id of course', VALUE_REQUIRED)
             )
@@ -34,7 +33,7 @@ class get_feedback_data extends external_api {
     public static function execute($courseid) {
         global $DB, $USER;
         
-        //parameter validation
+        // parameter validation
         $params = self::validate_parameters(self::execute_parameters(),
                     array(
                         'courseid' => $courseid
@@ -53,7 +52,7 @@ class get_feedback_data extends external_api {
         try {
             $result = $DB->get_records_sql($sql, $paramsql);
         } catch (dml_exception $e) {
-            //ignore any sql errors here, the connection might be broken (found this line in core)
+            // ignore any sql errors here, the connection might be broken (found this line in core)
         }
 
         return $result;

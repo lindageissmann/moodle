@@ -1,14 +1,13 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . "/externallib.php");
+
 /**
  * External function to save a feedback for a certain activity for the current user
  * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
  * https://docs.moodle.org/dev/External_functions_API
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . "/externallib.php");
-
 class set_feedback_data extends external_api {
 
     /**
@@ -48,21 +47,21 @@ class set_feedback_data extends external_api {
 
         $cmobj = $DB->get_record('course_modules', array( 'id' => $params['cmid']), '*', IGNORE_MISSING);
         $courseid = $cmobj->course;
-        if(!$cmobj) {
-            $success = false; //invalid course
+        if (!$cmobj) {
+            $success = false; // invalid course
         }
 
         if ($success) {
-            //do NOT use require_login() in an external function
-            //https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin#Context_and_Capability_checks
-            ////check if user is logged in and is allowed to be in the course '$courseid' and view the activity '$cmobj'
-            //require_login($courseid, true, $cmobj);
+            // do NOT use require_login() in an external function
+            // https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin#Context_and_Capability_checks
+            // check if user is logged in and is allowed to be in the course '$courseid' and view the activity '$cmobj'
+            // require_login($courseid, true, $cmobj);
 
             $context = context_course::instance($courseid);
-            //This function does sanity and security checks on the context that was passed to the external function
-            //and sets up the global $PAGE and $OUTPUT for rendering return values
+            // This function does sanity and security checks on the context that was passed to the external function
+            // and sets up the global $PAGE and $OUTPUT for rendering return values
             self::validate_context($context);
-            //check if user has capability to view a block on the course
+            // check if user has capability to view a block on the course
             require_capability('moodle/block:view', $context);
         }
 
@@ -90,16 +89,16 @@ class set_feedback_data extends external_api {
                 $dataobject->timemodified = time();
 
                 $DB->insert_record($table, $dataobject, false, false);
-            } // DELETE if selected feedback option is also the same
-            else if ($target->fbid == $fbid) {
+            } else if ($target->fbid == $fbid) {
+                // DELETE if selected feedback option is also the same
                 $conditions = array(
                         'cmid' => $params['cmid'],
                         'userid' => $params['userid'],
                         'fbid' => $params['fbid']
                 );
                 $DB->delete_records($table, $conditions);
-            } // UPDATE if found but feedback option is another
-            else {
+            } else {
+                // UPDATE if found but feedback option is another
                 // change feedback option
                 $target->fbid = $fbid;
                 $target->fbname = $fbname;
@@ -108,7 +107,7 @@ class set_feedback_data extends external_api {
                 $DB->update_record($table, $target);
             }
         } catch (dml_exception $e) {
-            //ignore any sql errors here, the connection might be broken (found this line in core)
+            // ignore any sql errors here, the connection might be broken (found this line in core)
             $success = false;
         }
         return $success;
@@ -121,7 +120,7 @@ class set_feedback_data extends external_api {
      * @return external_value
      */
     public static function execute_returns() {
-        //return new external_value(PARAM_TEXT, 'Log message');
         return new external_value(PARAM_BOOL, 'success');
     }
 }
+

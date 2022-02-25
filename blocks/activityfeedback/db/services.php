@@ -8,6 +8,9 @@
  * https://docs.moodle.org/dev/Adding_a_web_service_to_a_plugin
  *
  * Update version.php to see changes.
+ *
+ * @copyright Fernfachhochschule Schweiz, 2022
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -36,13 +39,15 @@ $functions = array(
         ),
         'block_activityfeedback_set_feedback_data' => array( // web service function name, callable from client
                 'classname'   => 'set_feedback_data', // class containing the external function
-                // (or with path, then you don't need classpath, but namespace and usings in class, see e.g. block 'accessreview') 
+                // (or with path, then you don't need classpath, but namespace and usings in class, see e.g. block 'accessreview')
                 'methodname'  => 'execute', // external function named, implemented in the above class
-                'classpath'   => 'blocks/activityfeedback/classes/external/set_feedback_data.php', // file containing the class/external function (optional, dependent of namespace of class)
-                'description' => 'Update database table block_activityfeedback if feedback option was selected.', // will be displayed in the generated API documentation
+                // file containing the class/external function (optional, dependent of namespace of class)
+                'classpath'   => 'blocks/activityfeedback/classes/external/set_feedback_data.php',
+                // will be displayed in the generated API documentation
+                'description' => 'Update database table block_activityfeedback if feedback option was selected.',
                 'type'        => 'write', // database rights of the web service function (read, write)
                 'ajax'        => true, // if service is available to 'internal' ajax calls
-                //'services' => array(xxx) // optional, list of built-in services where the function will be included
+                // 'services' => array(xxx) // optional, list of built-in services where the function will be included
                 'capabilities'  => '',  // list of capabilities required by the function (those in a require_capability() call)
         ),
         'block_activityfeedback_get_pix_data' => array(
@@ -62,18 +67,23 @@ $functions = array(
  * A pre-build service is not editable by administrator.
  */
 $services = array(
-        'Activity feedback service' => array( //name of the web service
+        'Activity feedback service' => array( // name of the web service
                 'functions' => array(
                         'block_activityfeedback_get_feedback_data',
                         'block_activityfeedback_get_feedback_activity',
                         'block_activityfeedback_set_feedback_data',
                         'block_activityfeedback_get_pix_data'
-                ), //web service functions of this service
-                'requiredcapability' => 'moodle/block:view', //if set, the web service user need this capability to access any function of this service
-                'restrictedusers' => 0, //if 1, the administrator must manually select which user can use this service (> Web services > Manage services > Authorised users)
-                'enabled' => 1, //if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
-                'shortname' => 'activityfeedbackservice', //the short name used to refer to this service from elsewhere including when fetching a token, optional – but needed if restrictedusers is set so as to allow logins
-                'downloadfiles' => 0, //don't allow file downloads
-                'uploadfiles' => 0 //don't allow file uploads
+                ), // web service functions of this service
+                // if set, the web service user need this capability to access any function of this service
+                'requiredcapability' => 'moodle/block:view',
+                // if 1, the administrator must manually select which user can use this service (> Web services > Manage services > Authorised users)
+                'restrictedusers' => 0,
+                // if 0, then token linked to this service won't work, if enabled, the service can be reachable on a default installation
+                'enabled' => 1,
+                // short name used to refer to this service from elsewhere including when fetching a token,
+                // optional – but needed if restrictedusers is set so as to allow logins
+                'shortname' => 'activityfeedbackservice',
+                'downloadfiles' => 0, // don't allow file downloads
+                'uploadfiles' => 0 // don't allow file uploads
         )
 );

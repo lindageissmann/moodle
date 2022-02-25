@@ -7,6 +7,10 @@
  * https://docs.moodle.org/dev/Blocks
  * https://docs.moodle.org/dev/Blocks_Advanced
  * Functions init(), get_content(), specialization() are not executed if block is manually set to hidden in a course.
+ *
+ * @package   block_activityfeedback
+ * @copyright Fernfachhochschule Schweiz, 2022
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/blocks/activityfeedback/lib.php');
@@ -34,30 +38,28 @@ class block_activityfeedback extends block_base {
      * @throws dml_exception
      */
     public function get_content() {
-        global $PAGE;
-        //default, time-saver because it's called several times, content should only be set once
-        //in our particular case, we normally have no content unless we are in editing mode
-        //we create a pseudo content "new stdClass" to distinguish if we have already executed the function
+        // global $PAGE;//todolig entfernt
+        // default, time-saver because it's called several times, content should only be set once
+        // in our particular case, we normally have no content unless we are in editing mode
+        // we create a pseudo content "new stdClass" to distinguish if we have already executed the function
         if ($this->content !== null) {
             return $this->content;
         }
 
-        //necessary because normally we have no content,
-        //but here we define an object, otherwise this part would be executed multiple times when reloading the page
+        // necessary because normally we have no content,
+        // but here we define an object, otherwise this part would be executed multiple times when reloading the page
         $this->content = new stdClass;
 
-        //only set content of the block if we are in editing mode
-        //(https://docs.moodle.org/dev/Blocks_Advanced#Add_editing_capability)
-        $inconfigmode = $PAGE->user_is_editing($this->instance->id);
-        if($inconfigmode) {
+        // only set content of the block if we are in editing mode
+        // (https://docs.moodle.org/dev/Blocks_Advanced#Add_editing_capability)
+        $inconfigmode = $this->page->user_is_editing($this->instance->id);
+        if ($inconfigmode) {
             $this->content->text = get_string('contenttext', 'block_activityfeedback');
         }
-        //otherwise the block content is empty and therefore automatically not displayed
+        // otherwise the block content is empty and therefore automatically not displayed
 
         return $this->content;
     }
-
-    // to reacto to block instance config (in get_content() works also, but sooner is better)
 
     /**
      * Get the data to display our feedback options on every activity.
@@ -70,9 +72,9 @@ class block_activityfeedback extends block_base {
      * @throws dml_exception
      */
     public function specialization() {
-        global $CFG, $COURSE, $PAGE;
+        global $CFG, $COURSE; //todolig: shouldn't be used in block classes $PAGE;
 
-        //check if at least one feedback option is enabled in admin settings
+        // check if at least one feedback option is enabled in admin settings
         for ($num = 1; $num <= 7; $num++) {
             $enabled = get_config('block_activityfeedback', 'opt'.$num.'activeadmin');
             if ($enabled) {
@@ -80,18 +82,18 @@ class block_activityfeedback extends block_base {
             }
         }
 
-        if($enabled) {
-            //don't show feedback options if we are in config/editing mode
-            //advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
-            //disadvantage: we see no differences in config mode when switching from invisible to visible
-            $inconfigmode = $PAGE->user_is_editing($this->instance->id);
+        if ($enabled) {
+            // don't show feedback options if we are in config/editing mode
+            // advantage: feedback buttons do not disturb config mode (e.g. by overlaying edit buttons)
+            // disadvantage: we see no differences in config mode when switching from invisible to visible
+            $inconfigmode = $this->page->user_is_editing($this->instance->id);
             if (!$inconfigmode) {
                 $args = array(
                         'rootpath' => $CFG->wwwroot,
                         'courseid' => $COURSE->id
                 );
-                //call to javascript module.js for displaying the correct feedback options
-                $PAGE->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
+                // call to javascript module.js for displaying the correct feedback options
+                $this->page->requires->js_call_amd('block_activityfeedback/module', 'init', array($args));
             }
         }
     }
@@ -142,29 +144,17 @@ class block_activityfeedback extends block_base {
         $params = ['courseid' => $COURSE->id];
 
         try {
-            // DELETE FROM block_activityfeedback
-            // WHERE cmid in (SELECT id from prefix_course_modules WHERE course = 'current course';
             $DB->delete_records_subquery($table, 'cmid', 'id',
                     'SELECT id FROM {course_modules} WHERE course = :courseid', $params);
-        }
-        catch (dml_exception $e) {
+        } catch (dml_exception $e) {
             return false;
         }
         return true;
     }
 
-    /**
-     * We have no need to overwrite the function instance_copy() to
-     * copy any block-specific data when copying to a new block instance.
-     */
+    // We have no need to overwrite the function instance_copy() to
+    // copy any block-specific data when copying to a new block instance.
 
-    /**
-     * Not needed at the moment.
-     * Don't display the title of the block. Title in init() function is mandatory.
-     * @return bool
-     */
-    //public function hide_header(): bool {
-    //    return true;
-    //}
+    // We don't need to suppress displaying the title of the block (init() is mandatory)
+    // function hide_header(): bool
 }
-

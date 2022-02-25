@@ -9,7 +9,12 @@
  * See Site administration / Users / Define roles.
  *
  * Update version.php to see changes.
+ *
+ * @copyright Fernfachhochschule Schweiz, 2022
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Defines capabilities array (who is allowed to create/edit this block).
@@ -24,17 +29,17 @@
  * archetypes: defines for each role the default permissions.
  */
 $capabilities = array(
-    //add block on moodle/my not allowed
+    // add block on moodle/my not allowed
     'block/activityfeedback:myaddinstance' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM, 
-        'archetypes' => array(), //nobody by default
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(), // nobody by default
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ),
 
-    //add block is allowed for certain roles
-	'block/activityfeedback:addinstance' => array(
-        'riskbitmask' => RISK_SPAM | RISK_XSS, //default for blocks
+    // add block is allowed for certain roles
+    'block/activityfeedback:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS, // default for blocks
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
@@ -45,9 +50,9 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
 
-    //for viewing the block, the following default is used
-    //moodle/block:view
-    //is normally given to: teacher, non-editing teacher, student, guest, authenticated user
-    //not to: manager, course creator, authenticated user on frontpage
-    //the same capability is used to select a feedback option, we don't create a new capability
+    // for viewing the block, the following default is used
+    // moodle/block:view
+    // is normally given to: teacher, non-editing teacher, student, guest, authenticated user
+    // not to: manager, course creator, authenticated user on frontpage
+    // the same capability is used to select a feedback option, we don't create a new capability
 );
