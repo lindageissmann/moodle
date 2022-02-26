@@ -1,61 +1,39 @@
 /*update version.php to see changes*/
 .block_activityfeedback_container {
-    /*https://wiki.selfhtml.org/wiki/HTML/Tutorials/Bilder_im_Internet/Bilder_mit_CSS_formatieren#Der_Normalfall:_mehrere_Bilder_nebeneinander*/
-    /*display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
-    gap: 1em;
-    display: inline-block;*/
-    /*display: flex;*/
-    /*color: red;*/
     position: absolute;
-    /*left: 90%;*/
-    right: 1%; /*fast ganz rechts*/
-    /*top: 0%;*/
-    /*top: -0.6rem;*//*ca. zentriert zu aktivitätsbezeichnung, bei 0% ist oberer rand gleich, ist aber grösser nach unten*/
-    /*z-index: 1;*/
-    display: inline-block; /*ist damit gleich hoch, gleich wie aktivität*/
+    right: 1%; /*on the right side of activity*/
+    display: inline-block; /*inline with activity*/
 }
-img.block_activityfeedback_img_main {
+block_activityfeedback_img_main {
     cursor: pointer;
-    max-width: 30px;
-    /*todolig ok? ähnl. icon, siehe smartphone, da auch fest 24px*/
+    max-width: 30px; /*activity icon is also static, 24px*/
     height: auto;
-    border-radius: 50%;/*rounded image*/
-    box-shadow: 1px 1px 3px 1px #b3b2b2; /*#7d0a52;*/
-    /*evtl. hover: transform: scale(1.1);*/
+    border-radius: 50%; /*rounded image*/
+    box-shadow: 1px 1px 3px 1px #b3b2b2; /*official color FFHS: Sekundärfarbe Hellgrau*/
 }
-img.block_activityfeedback_img_main:hover {
-    transform: scale(1.1);/*todolig: wird blurry, auch mit max-width od. scale down*/
+block_activityfeedback_img_main:hover {
+    transform: scale(1.1);
 }
 .block_activityfeedback_img {
     /*cursor: pointer;*/
     max-width: 40px;
     height: auto;
 }
-/*.block_activityfeedback_img:hover {*/
-/*    filter: drop-shadow(2px 2px 2px #7d0a52)*/
-/*}*/
 .block_activityfeedback_figopt {
     cursor: pointer;
-    display: inline-block;/*inline-table auch ok*/
-    /*margin: 0.2rem 0 0.2rem 0;*/
-    margin: 0.1rem 0.1rem 0.1rem 0.1rem;/*overwrite standard margin of figure 0 0 1rem*/
-    /*padding: 0.2rem 0 0.2rem 0;*/
+    display: inline-block;
+    margin: 0.1rem 0.1rem 0.1rem 0.1rem; /*overwrite standard margin of figure 0 0 1rem*/
     padding: 0rem;
-    color: black;/*textfarbe*/
+    color: black; /*text color*/
     text-align: center;
     font-size: 0.6rem;
-    /*width: max-content nicht nötig, schadet nicht*/
 }
 .block_activityfeedback_figopt:hover {
     /*font-weight: 700;*/
     transform: scale(1.05);
     /*filter: drop-shadow(2px 2px 2px #7d0a52)*/
 }
-/*selected: filter: grayscale(100%) / font-weight: 700;*/
 .block_activityfeedback_selected {
-    /*border: 5px solid red;*/
-    /*evtl. Text umrahmen/fett o.ä. bild schwierig weil vermutl. rund*/
     font-weight: 700;
     filter: none;
 }
@@ -69,52 +47,27 @@ img.block_activityfeedback_img_main:hover {
     opacity: 0;
     visibility: hidden;
     position: absolute;
-    right: calc(0.8rem + 100%);/*rechter Rand mit 0.5 abstand zu rechtem Rand vom parent (mainImg)*/
-    top: -0.9rem;/*etwa gleich hoch wie imgMain*/
-    /*transform: translate(0, 10px);*/
-    background-color: #e2e5ec; /*e2e5ec ist dünkler grau wie bei hover in moodle / #502479; /*Corporate Violett statt grau b3b2b2;*/
-    /*padding: 1.5rem;*/
-    box-shadow: 2px 2px 3px 1px #b3b2b2; /*#7d0a52;*/ /*Sekundärfarbe Purpurrot statt grau #b3b2b2;*//*#f7f8fc für acitivty in ffhs moodle*/
-    width: max-content;/*damit inline-block fkt. dass nebeneinander*/
-    /*mit max-content auch fkt auch alternativen ohne width*/
-    /*display: flex;*/
+    right: calc(0.8rem + 100%); /*distance to right edge of parent (img_main)*/
+    top: -0.9rem; /*middle of img_main*/
+    background-color: #e2e5ec; /*already used in FFHS Moodle*/
+    box-shadow: 2px 2px 3px 1px #b3b2b2; /*official color FFHS: Sekundärfarbe Hellgrau*/
+    width: max-content; /*side by side, in combi with inline-block*/
     border-radius: 8px;
 }
 /*Popover could be made with Bootstrap, Bootstrap 4 needs jQuery
 which is stongly discouraged from being used, idea for CSS comes from:
 https://codepen.io/chocochip/pen/zYxMgRG
 Once Moodle supports Bootstrap 5, this would be easier to use.*/
-.popover_content:before { /*arrow*/
+.popover_content:before { /*arrow for popover container*/
     position: absolute;
-    /*z-index: 100;*/ /*-1 hinter allem, nicht 100, bleibt dann vor drop-shadow*/
     content: "";
     right: -0.6rem;
     top: calc(50% - 16%);
     border-style: solid;
-    border-width: 10px 0px 10px 10px;/*Dreieck nach rechts zeigend, rechts angemacht*/
-    border-color: transparent transparent transparent #e2e5ec;/*Dreieck, links flach*/
-    /*transition-duration: 0.3s;
-    transition-property: transform;*/
-    /*evtl. besser verständlich:
-    https://stackoverflow.com/questions/23420617/emulate-the-bootstrap-side-popover-without-javascript
-     */
+    border-width: 10px 0px 10px 10px;/*triangle on the right side*/
+    border-color: transparent transparent transparent #e2e5ec;/*pointing to the right*/
 }
 .popover_content.popover_visible {
-    /*z-index: 100;*/ /*vor restl. Elems angeordnet*/
     opacity: 1;
     visibility: visible;
 }
-
-/*img:hover {
-    transform: scaleY(-1);
-} auf KOpf drehen vermutlich*/
-/*rundherum: transform:rotate(360deg);*/
-/*animation: 1s infinite alternate pulse; z.B. mit scale:1.2 vergrössern/verkleinern*/
-
-/*
-https://docs.moodle.org/dev/Blocks
-html_attributes
-
-siehe auch block_simplehtml:
-$this->content->text .= html_writer::start_tag('ul');
- */

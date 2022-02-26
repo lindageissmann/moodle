@@ -24,7 +24,6 @@ class block_activityfeedback extends block_base {
      * Give values to any class member variables.
      * Is essential for all blocks. Title must be set even if you want to display no title.
      * Does not affect the behavior, that the block is hidden if it has no content.
-     * @throws coding_exception
      */
     public function init() {
         $this->title = get_string('pluginname', 'block_activityfeedback');
@@ -34,11 +33,8 @@ class block_activityfeedback extends block_base {
      * Display the block content.
      * Is always needed, but we use specialization() to display the feedback options.
      * @return stdClass|stdObject|null
-     * @throws coding_exception
-     * @throws dml_exception
      */
     public function get_content() {
-        // global $PAGE;//todolig entfernt
         // default, time-saver because it's called several times, content should only be set once
         // in our particular case, we normally have no content unless we are in editing mode
         // we create a pseudo content "new stdClass" to distinguish if we have already executed the function
@@ -72,7 +68,7 @@ class block_activityfeedback extends block_base {
      * @throws dml_exception
      */
     public function specialization() {
-        global $CFG, $COURSE; //todolig: shouldn't be used in block classes $PAGE;
+        global $CFG, $COURSE; // $this->page instead of $PAGE in blocks
 
         // check if at least one feedback option is enabled in admin settings
         for ($num = 1; $num <= 7; $num++) {
