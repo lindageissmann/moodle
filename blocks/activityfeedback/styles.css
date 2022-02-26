@@ -4,14 +4,14 @@
     right: 1%; /*on the right side of activity*/
     display: inline-block; /*inline with activity*/
 }
-block_activityfeedback_img_main {
+.block_activityfeedback_img_main {
     cursor: pointer;
     max-width: 30px; /*activity icon is also static, 24px*/
     height: auto;
     border-radius: 50%; /*rounded image*/
     box-shadow: 1px 1px 3px 1px #b3b2b2; /*official color FFHS: Sekundärfarbe Hellgrau*/
 }
-block_activityfeedback_img_main:hover {
+.block_activityfeedback_img_main:hover {
     transform: scale(1.1);
 }
 .block_activityfeedback_img {
