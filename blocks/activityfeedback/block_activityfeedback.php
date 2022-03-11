@@ -107,8 +107,6 @@ class block_activityfeedback extends block_base {
      * It shouldn't be possible to add multiple blocks of this type in a single course.
      * The administrator still has the option of disallowing such behavior.
      * This setting can be set separately for each block from the Administration / Configuration / Blocks page.
-     * https://docs.moodle.org/dev/Blocks#We_Are_Legion
-     * It doesn't seem to work, it's still possible to add multiple instances.
      * @return bool
      */
     public function instance_allow_multiple(): bool {

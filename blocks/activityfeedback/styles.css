@@ -23,7 +23,7 @@
     cursor: pointer;
     display: inline-block;
     margin: 0.1rem 0.1rem 0.1rem 0.1rem; /*overwrite standard margin of figure 0 0 1rem*/
-    padding: 0rem;
+    padding: 0;
     color: black; /*text color*/
     text-align: center;
     font-size: 0.6rem;
@@ -64,7 +64,7 @@ Once Moodle supports Bootstrap 5, this would be easier to use.*/
     right: -0.6rem;
     top: calc(50% - 16%);
     border-style: solid;
-    border-width: 10px 0px 10px 10px;/*triangle on the right side*/
+    border-width: 10px 0 10px 10px;/*triangle on the right side*/
     border-color: transparent transparent transparent #e2e5ec;/*pointing to the right*/
 }
 .popover_content.popover_visible {
